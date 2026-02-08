@@ -1,0 +1,12 @@
+$primary-color: #8B5CF6;
+$separator-color: #777777;
+
+.card {
+  background-color: #11111a;
+  border: 1px solid $separator-color;
+  border-radius: 15px;
+
+  &:hover {
+    border: 1px solid $primary-color;
+  }
+}
