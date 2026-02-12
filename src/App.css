@@ -4,8 +4,8 @@
   line-height: 24px;
   font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;;
+  color: #f0f0f0;
+  background-color: #101013;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -16,11 +16,12 @@
 
 .container {
   margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
+  padding: 0;
+}
+
+body {
+  color: #f0f0f0 !important;
+  background-color: #101013 !important;
 }
 
 @media (prefers-color-scheme: dark) {

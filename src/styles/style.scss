@@ -2,6 +2,7 @@ $primary-color: #8B5CF6;
 $separator-color: #777777;
 
 .card {
+  color: #f0f0f0;
   background-color: #11111a;
   border: 1px solid $separator-color;
   border-radius: 15px;
@@ -9,4 +10,8 @@ $separator-color: #777777;
   &:hover {
     border: 1px solid $primary-color;
   }
+}
+
+.dark-bg {
+  background-color: #101013;
 }
