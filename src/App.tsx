@@ -1,14 +1,41 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import "./App.css";
-import "./styles/style.scss"
-import Home from "./views/home";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
+import { AccentProvider } from "@/contexts/AccentContext";
+import HomePage from "./pages/Home";
+import Index from "./pages/Index";
+import History from "./pages/History";
+import Stats from "./pages/Stats";
+import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
+ 
+const queryClient = new QueryClient();
 
-function App() {
-  return (
-    <main className="container-fluid w-100">
-      <Home />
-    </main>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <AccentProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/timer" element={<Index />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/stats" element={<Stats />} />
+              <Route path="/settings" element={<Settings />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AccentProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
 
 export default App;
