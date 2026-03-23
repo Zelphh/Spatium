@@ -1,3 +1,4 @@
+
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -68,7 +69,7 @@ export function Sidebar() {
                   {isActive && (
                     <motion.div
                       layoutId="sidebar-indicator"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-full"
+                      className="absolute left-1 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-full"
                       initial={false}
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />

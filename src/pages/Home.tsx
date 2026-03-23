@@ -6,8 +6,8 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 
 // Placeholder stats — will be replaced with real data when Cloud is enabled
-const todayStats = { hours: 0, label: 'Hoje', icon: Clock, colorVar: '--category-study' };
-const weekStats  = { hours: 0, label: 'Esta Semana', icon: TrendingUp, colorVar: '--category-work' };
+const todayStats = { hours: 0, label: 'Hoje', icon: Clock, colorVar: '--category-work' };
+const weekStats  = { hours: 0, label: 'Esta Semana', icon: TrendingUp, colorVar: '--category-study' };
 const dailyAvg   = { hours: 0, label: 'Média Diária', icon: Target, colorVar: '--category-custom' };
 
 const recentSessions: { id: number; category: string; duration: string; time: string }[] = [];
@@ -15,7 +15,7 @@ const recentSessions: { id: number; category: string; duration: string; time: st
 const HomePage = () => {
   return (
     <AppLayout>
-      <div className="p-8 max-w-6xl">
+      <div className="p-4 md:p-8 max-w-6xl mx-auto w-full">
         {/* Header */}
         <motion.div
           className="mb-8"
@@ -25,13 +25,13 @@ const HomePage = () => {
         >
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Bem-vindo ao Spatium — gerencie seu tempo de forma eficiente
+            Bem-vindo ao Spatium — Gerencie seu tempo de forma eficiente
           </p>
         </motion.div>
 
         {/* Stats Row */}
         <motion.div
-          className="grid grid-cols-3 gap-4 mb-8"
+          className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-4 mb-8"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
@@ -47,10 +47,12 @@ const HomePage = () => {
                   className="absolute inset-0 opacity-10"
                   style={{ background: `hsl(var(${stat.colorVar}))` }}
                 />
-                <CardContent className="p-5 relative">
-                  <div className="flex items-center gap-2 mb-3">
+                <CardContent className="p-5 relative h-full flex flex-col">
+                  <div className="flex items-start gap-2 mb-3 min-h-[2.75rem]">
                     <Icon size={15} style={{ color: `hsl(var(${stat.colorVar}))` }} />
-                    <span className="text-sm text-muted-foreground font-medium">{stat.label}</span>
+                    <span className="text-sm text-muted-foreground font-medium leading-tight">
+                      {stat.label}
+                    </span>
                   </div>
                   <p
                     className="timer-display text-4xl font-bold"
@@ -72,7 +74,7 @@ const HomePage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <Card className="border-border/60 h-full">
+            <Card className="border-border/60 h-full overflow-hidden">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-semibold">Início Rápido</CardTitle>
               </CardHeader>
@@ -80,7 +82,7 @@ const HomePage = () => {
               <CardContent className="p-6 flex flex-col items-center gap-6">
                 {/* Big clock display */}
                 <div className="text-center">
-                  <p className="timer-display text-6xl font-bold text-primary timer-glow mt-4">
+                  <p className="timer-display text-4xl font-bold text-primary timer-glow mt-4">
                     00:00:00
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">Pronto para iniciar</p>

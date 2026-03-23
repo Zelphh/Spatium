@@ -37,8 +37,8 @@
     /* Category colors */
     --category-work: 263 70% 60%;
     --category-study: 188 85% 45%;
-    --category-games: 340 80% 58%;
-    --category-custom: 35 90% 52%;
+    --category-games: 230 70% 60%;
+    --category-custom: 200, 70%, 60%;
 
     /* Stats card accent backgrounds */
     --stat-today: 263 40% 88%;
@@ -85,9 +85,9 @@
     --ring: 263 70% 60%;
 
     --category-work: 263 70% 60%;
-    --category-study: 188 85% 48%;
+    --category-study: 230, 70%, 60%;
     --category-games: 340 80% 60%;
-    --category-custom: 35 90% 55%;
+    --category-custom: 200, 70%, 60%;
 
     --stat-today: 263 30% 16%;
     --stat-week: 188 30% 14%;
@@ -128,8 +128,8 @@
 
   .timer-glow {
     text-shadow:
-      0 0 40px hsl(var(--primary) / 0.5),
-      0 0 80px hsl(var(--primary) / 0.2);
+      0 0 10px hsl(var(--primary) / 0.5),
+      0 0 20px hsl(var(--primary) / 0.2);
   }
 
   .card-glass {
