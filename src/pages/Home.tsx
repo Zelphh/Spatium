@@ -1,16 +1,37 @@
-import { motion } from 'framer-motion';
-import { Clock, TrendingUp, Target } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { motion } from "framer-motion";
+import { Clock, TrendingUp, Target } from "lucide-react";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
-// Placeholder stats — will be replaced with real data when Cloud is enabled
-const todayStats = { hours: 0, label: 'Hoje', icon: Clock, colorVar: '--category-work' };
-const weekStats  = { hours: 0, label: 'Esta Semana', icon: TrendingUp, colorVar: '--category-study' };
-const dailyAvg   = { hours: 0, label: 'Média Diária', icon: Target, colorVar: '--category-custom' };
+const todayStats = {
+  hours: 0,
+  label: "Hoje",
+  icon: Clock,
+  colorVar: "--category-work",
+};
 
-const recentSessions: { id: number; category: string; duration: string; time: string }[] = [];
+const weekStats = {
+  hours: 0,
+  label: "Esta Semana",
+  icon: TrendingUp,
+  colorVar: "--category-study",
+};
+
+const dailyAvg = {
+  hours: 0,
+  label: "Média Diár ia",
+  icon: Target,
+  colorVar: "--category-custom",
+};
+
+const recentSessions: {
+  id: number;
+  category: string;
+  duration: string;
+  time: string;
+}[] = [];
 
 const HomePage = () => {
   return (
@@ -49,7 +70,10 @@ const HomePage = () => {
                 />
                 <CardContent className="p-5 relative h-full flex flex-col">
                   <div className="flex items-start gap-2 mb-3 min-h-[2.75rem]">
-                    <Icon size={15} style={{ color: `hsl(var(${stat.colorVar}))` }} />
+                    <Icon
+                      size={15}
+                      style={{ color: `hsl(var(${stat.colorVar}))` }}
+                    />
                     <span className="text-sm text-muted-foreground font-medium leading-tight">
                       {stat.label}
                     </span>
@@ -76,7 +100,9 @@ const HomePage = () => {
           >
             <Card className="border-border/60 h-full overflow-hidden">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">Início Rápido</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  Início Rápido
+                </CardTitle>
               </CardHeader>
               <Separator />
               <CardContent className="p-6 flex flex-col items-center gap-6">
@@ -85,12 +111,14 @@ const HomePage = () => {
                   <p className="timer-display text-4xl font-bold text-primary timer-glow mt-4">
                     00:00:00
                   </p>
-                  <p className="text-sm text-muted-foreground mt-2">Pronto para iniciar</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Pronto para iniciar
+                  </p>
                 </div>
 
                 {/* Quick category badges */}
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {['Trabalho', 'Estudo', 'Jogos'].map((cat) => (
+                  {["Trabalho", "Estudo", "Jogos"].map((cat) => (
                     <Badge
                       key={cat}
                       variant="secondary"
@@ -121,7 +149,9 @@ const HomePage = () => {
           >
             <Card className="border-border/60 h-full">
               <CardHeader className="pb-3 flex-row items-center justify-between">
-                <CardTitle className="text-base font-semibold">Histórico Recente</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  Histórico Recente
+                </CardTitle>
                 <span className="text-xs text-muted-foreground timer-display">
                   Total: <span className="text-primary">00:00:00</span>
                 </span>
@@ -146,7 +176,9 @@ const HomePage = () => {
                       >
                         <div>
                           <p className="text-sm font-medium">{s.category}</p>
-                          <p className="text-xs text-muted-foreground">{s.time}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {s.time}
+                          </p>
                         </div>
                         <span className="timer-display text-sm text-primary font-medium">
                           {s.duration}

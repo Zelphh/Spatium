@@ -1,26 +1,44 @@
+import { NavLink } from "@/components/NavLink";
+import { useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Timer, History, BarChart3, Home, Settings, Menu } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
-import { NavLink } from '@/components/NavLink';
-import { useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Timer, History, BarChart3, Home, Settings } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+interface SidebarProps {
+  isOpen?: boolean;
+  setIsOpen?: (open: boolean) => void;
+}
 
 const navItems = [
-  { path: '/', label: 'Home', icon: Home, end: true },
-  { path: '/timer', label: 'Timer', icon: Timer, end: true },
-  { path: '/history', label: 'Histórico', icon: History, end: true },
-  { path: '/stats', label: 'Estatísticas', icon: BarChart3, end: true },
-  { path: '/settings', label: 'Configurações', icon: Settings, end: true },
+  { path: "/", label: "Home", icon: Home, end: true },
+  { path: "/timer", label: "Timer", icon: Timer, end: true },
+  { path: "/history", label: "Histórico", icon: History, end: true },
+  { path: "/stats", label: "Estatísticas", icon: BarChart3, end: true },
+  { path: "/settings", label: "Configurações", icon: Settings, end: true },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const location = useLocation();
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex flex-col z-50 shadow-sm">
+    <aside
+      className={cn(
+        "fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex flex-col z-50 shadow-sm transition-transform duration-300",
+        isOpen ? "translate-x-0" : "-translate-x-full",
+      )}
+    >
       {/* Logo */}
-      <div className="p-6 pb-5">
+      <div className="p-6 pb-5 relative">
+        <button
+          type="button"
+          onClick={() => setIsOpen?.(false)}
+          aria-label="Fechar menu"
+          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <Menu size={16} />
+        </button>
+
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -31,8 +49,12 @@ export function Sidebar() {
             <Timer size={18} className="text-white" />
           </div>
           <div>
-            <span className="text-lg font-bold text-foreground tracking-tight">Spatium</span>
-            <p className="text-[10px] text-muted-foreground leading-tight">Gerencie seu tempo</p>
+            <span className="text-lg font-bold text-foreground tracking-tight">
+              Spatium
+            </span>
+            <p className="text-[10px] text-muted-foreground leading-tight">
+              Gerencie seu tempo
+            </p>
           </div>
         </motion.div>
       </div>
@@ -58,10 +80,10 @@ export function Sidebar() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.07 }}
                   className={cn(
-                    'relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150',
+                    "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150",
                     isActive
-                      ? 'text-primary bg-accent'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                      ? "text-primary bg-accent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
                   )}
                   whileHover={{ x: 2 }}
                   whileTap={{ scale: 0.98 }}
@@ -71,7 +93,11 @@ export function Sidebar() {
                       layoutId="sidebar-indicator"
                       className="absolute left-1 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-full"
                       initial={false}
-                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 35,
+                      }}
                     />
                   )}
                   <Icon size={17} className="shrink-0" />
@@ -82,7 +108,6 @@ export function Sidebar() {
           })}
         </div>
       </nav>
-
     </aside>
   );
 }
