@@ -23,15 +23,18 @@ export function AppLayout({ children }: AppLayoutProps) {
       {!sidebarOpen && (
         <aside
           className={cn(
-            "fixed left-0 top-0 h-full w-5 bg-card border-r border-border flex flex-col z-50 shadow-sm duration-200",
+            "fixed left-0 top-0 h-full w-6 bg-card border-r border-border flex flex-col z-50 shadow-sm duration-200",
           )}
         >
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
             aria-label="Abrir menu"
-            className="fixed top-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-card text-foreground shadow-sm transition-colors hover:bg-muted"
-          >
+            className={cn(
+              "fixed top-10 z-50 inline-flex h-10 w-10 items-center justify-center rounded-md bg-card text-foreground shadow-sm transition-all",
+              "border border-border border-l-0 border-t-0 border-b-0 rounded-full",
+            )}
+            >
             <Menu size={18} />
           </button>
         </aside>
@@ -39,8 +42,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       <main
         className={cn(
-          "flex-1 min-h-screen overflow-y-auto transition-[margin] duration-200",
-          sidebarOpen ? "ml-64" : "ml-7",
+          "flex-1 min-h-screen overflow-y-auto transition-[margin] duration-300",
+          sidebarOpen ? "ml-64" : "ml-8",
         )}
       >
         {children}

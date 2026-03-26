@@ -36,7 +36,7 @@ const recentSessions: {
 const HomePage = () => {
   return (
     <AppLayout>
-      <div className="p-4 md:p-8 max-w-6xl mx-auto w-full">
+      <div className="p-8 max-w-6xl mx-auto w-full">
         {/* Header */}
         <motion.div
           className="mb-8"
@@ -52,42 +52,44 @@ const HomePage = () => {
 
         {/* Stats Row */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-4 mb-8"
+          className="mb-8 overflow-x-auto pb-2"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          {[todayStats, weekStats, dailyAvg].map((stat, i) => {
-            const Icon = stat.icon;
-            return (
-              <Card
-                key={stat.label}
-                className="border-border/60 overflow-hidden relative"
-              >
-                <div
-                  className="absolute inset-0 opacity-10"
-                  style={{ background: `hsl(var(${stat.colorVar}))` }}
-                />
-                <CardContent className="p-5 relative h-full flex flex-col">
-                  <div className="flex items-start gap-2 mb-3 min-h-[2.75rem]">
-                    <Icon
-                      size={15}
+          <div className="flex min-w-max flex-nowrap gap-4">
+            {[todayStats, weekStats, dailyAvg].map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <Card
+                  key={stat.label}
+                  className="border-border/60 overflow-hidden relative w-[220px] md:w-[260px] lg:flex-1"
+                >
+                  <div
+                    className="absolute inset-0 opacity-10"
+                    style={{ background: `hsl(var(${stat.colorVar}))` }}
+                  />
+                  <CardContent className="p-5 relative h-full flex flex-col">
+                    <div className="flex items-start gap-2 mb-3 min-h-[2.75rem]">
+                      <Icon
+                        size={15}
+                        style={{ color: `hsl(var(${stat.colorVar}))` }}
+                      />
+                      <span className="text-sm text-muted-foreground font-medium leading-tight">
+                        {stat.label}
+                      </span>
+                    </div>
+                    <p
+                      className="timer-display text-4xl font-bold"
                       style={{ color: `hsl(var(${stat.colorVar}))` }}
-                    />
-                    <span className="text-sm text-muted-foreground font-medium leading-tight">
-                      {stat.label}
-                    </span>
-                  </div>
-                  <p
-                    className="timer-display text-4xl font-bold"
-                    style={{ color: `hsl(var(${stat.colorVar}))` }}
-                  >
-                    {stat.hours.toFixed(1)}h
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
+                    >
+                      {stat.hours.toFixed(1)}h
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </motion.div>
 
         {/* Two-column: Timer shortcut + Recent History */}
