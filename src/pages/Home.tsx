@@ -52,18 +52,18 @@ const HomePage = () => {
 
         {/* Stats Row */}
         <motion.div
-          className="mb-8 overflow-x-auto pb-2"
+          className="mb-8 overflow-x-auto pb-2 md:overflow-visible md:pb-0"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <div className="flex min-w-max flex-nowrap gap-4">
+          <div className="flex min-w-max flex-nowrap gap-4 md:min-w-0 md:w-full">
             {[todayStats, weekStats, dailyAvg].map((stat) => {
               const Icon = stat.icon;
               return (
                 <Card
                   key={stat.label}
-                  className="border-border/60 overflow-hidden relative w-[220px] md:w-[260px] lg:flex-1"
+                  className="border-border/60 overflow-hidden relative w-[220px] shrink-0 md:min-w-0 md:w-auto md:flex-1 md:shrink"
                 >
                   <div
                     className="absolute inset-0 opacity-10"
@@ -93,7 +93,7 @@ const HomePage = () => {
         </motion.div>
 
         {/* Two-column: Timer shortcut + Recent History */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Quick Start Card */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}

@@ -31,7 +31,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             onClick={() => setSidebarOpen(true)}
             aria-label="Abrir menu"
             className={cn(
-              "fixed top-10 z-50 inline-flex h-10 w-10 items-center justify-center rounded-md bg-card text-foreground shadow-sm transition-all",
+              "fixed top-6 z-50 inline-flex h-10 w-9 items-center justify-center rounded-md bg-card text-foreground shadow-sm transition-all",
               "border border-border border-l-0 border-t-0 border-b-0 rounded-full",
             )}
             >
@@ -43,7 +43,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <main
         className={cn(
           "flex-1 min-h-screen overflow-y-auto transition-[margin] duration-300",
-          sidebarOpen ? "ml-64" : "ml-8",
+          sidebarOpen ? "ml-60" : "ml-8",
         )}
       >
         {children}

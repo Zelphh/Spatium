@@ -24,7 +24,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex flex-col z-50 shadow-sm transition-transform duration-300",
+        "fixed left-0 top-0 h-full w-60 bg-card border-r border-border flex flex-col z-50 shadow-sm transition-transform duration-300",
         isOpen ? "translate-x-0" : "-translate-x-full",
       )}
     >
@@ -34,9 +34,9 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           type="button"
           onClick={() => setIsOpen?.(false)}
           aria-label="Fechar menu"
-          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="absolute right-4 top-6 inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
-          <Menu size={16} />
+          <Menu size={18} />
         </button>
 
         <motion.div
