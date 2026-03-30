@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { useAccent, AccentColor, accentMap } from '@/contexts/AccentContext';
+import { useAccent, accentMap, type AccentColor } from '@/contexts/AccentContext';
 
 const accentOptions: { key: AccentColor; label: string }[] = [
   { key: 'violet', label: 'Violeta' },

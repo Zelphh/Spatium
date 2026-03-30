@@ -10,11 +10,11 @@ interface AccentColors {
 
 const accentMap: Record<AccentColor, AccentColors> = {
   violet: { h: 263, s: 70, l: 60 },
-  cyan:   { h: 188, s: 85, l: 45 },
-  rose:   { h: 340, s: 80, l: 58 },
-  amber:  { h: 35,  s: 90, l: 52 },
-  emerald:{ h: 158, s: 65, l: 45 },
-  blue:   { h: 217, s: 80, l: 58 },
+  cyan: { h: 188, s: 85, l: 45 },
+  rose: { h: 340, s: 80, l: 58 },
+  amber: { h: 35, s: 90, l: 52 },
+  emerald: { h: 158, s: 65, l: 45 },
+  blue: { h: 217, s: 80, l: 58 },
 };
 
 interface AccentContextValue {
@@ -44,16 +44,11 @@ export function AccentProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--ring', `${h} ${s}% ${l}%`);
     root.style.setProperty('--sidebar-primary', `${h} ${s}% ${l}%`);
     root.style.setProperty('--sidebar-ring', `${h} ${s}% ${l}%`);
-    // accent background tint
     root.style.setProperty('--accent', `${h} ${s}% 20%`);
     root.style.setProperty('--accent-foreground', `${h} ${s - 10}% ${l + 20}%`);
   }, [accent]);
 
-  return (
-    <AccentContext.Provider value={{ accent, setAccent }}>
-      {children}
-    </AccentContext.Provider>
-  );
+  return <AccentContext.Provider value={{ accent, setAccent }}>{children}</AccentContext.Provider>;
 }
 
 export function useAccent() {

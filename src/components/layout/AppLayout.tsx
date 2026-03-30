@@ -11,7 +11,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const isSmallScreen = useMedia("(max-width: 1024px)");
+  const isSmallScreen = useMedia("(max-width: 780px)");
 
   useEffect(() => {
     setSidebarOpen(!isSmallScreen);
@@ -39,11 +39,11 @@ export function AppLayout({ children }: AppLayoutProps) {
           </button>
         </aside>
       )}
-
+    
       <main
         className={cn(
           "flex-1 min-h-screen overflow-y-auto transition-[margin] duration-300",
-          sidebarOpen ? "ml-60" : "ml-8",
+          !isSmallScreen && sidebarOpen ? "ml-60" : "ml-8",
         )}
       >
         {children}

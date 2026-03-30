@@ -91,14 +91,16 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   {isActive && (
                     <motion.div
                       layoutId="sidebar-indicator"
-                      className="absolute left-1 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-full"
+                      className="pointer-events-none absolute inset-y-0 left-1 flex w-0.5 items-center justify-center"
                       initial={false}
                       transition={{
                         type: "spring",
                         stiffness: 500,
                         damping: 35,
                       }}
-                    />
+                    >
+                      <span className="h-5 w-full rounded-full bg-primary" />
+                    </motion.div>
                   )}
                   <Icon size={17} className="shrink-0" />
                   <span>{item.label}</span>
