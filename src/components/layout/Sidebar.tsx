@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Timer, History, BarChart3, Home, Settings, Menu } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -20,6 +21,9 @@ const navItems = [
 
 export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const location = useLocation();
+
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <aside
@@ -82,7 +86,9 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   className={cn(
                     "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150",
                     isActive
-                      ? "text-primary bg-accent"
+                      ? isDark
+                        ? "text-primary bg-accent"
+                        : "text-primary bg-accent/15"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
                   )}
                   whileHover={{ x: 2 }}

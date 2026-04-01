@@ -1,26 +1,36 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { Briefcase, BookOpen, Gamepad2, TrendingUp } from 'lucide-react';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Briefcase, BookOpen, Gamepad2, TrendingUp } from "lucide-react";
 
-type Period = 'day' | 'week' | 'month';
+type Period = "day" | "week" | "month";
 
 const Stats = () => {
-  const [period, setPeriod] = useState<Period>('week');
+  const [period, setPeriod] = useState<Period>("week");
 
   const stats = {
-    total: '0h 0min',
+    total: "0h 0min",
     categories: [
-      { name: 'Trabalho', hours: 0, icon: Briefcase, colorVar: '--category-work' },
-      { name: 'Estudo',   hours: 0, icon: BookOpen,  colorVar: '--category-study' },
-      { name: 'Jogos',    hours: 0, icon: Gamepad2,  colorVar: '--category-games' },
+      {
+        name: "Trabalho",
+        hours: 0,
+        icon: Briefcase,
+        colorVar: "--category-work",
+      },
+      {
+        name: "Estudo",
+        hours: 0,
+        icon: BookOpen,
+        colorVar: "--category-study",
+      },
+      { name: "Jogos", hours: 0, icon: Gamepad2, colorVar: "--category-games" },
     ],
   };
 
-  const maxHours = Math.max(...stats.categories.map(c => c.hours), 1);
+  const maxHours = Math.max(...stats.categories.map((c) => c.hours), 1);
 
   return (
     <AppLayout>
@@ -32,20 +42,22 @@ const Stats = () => {
           className="mb-8"
         >
           <h1 className="text-2xl font-bold text-foreground">Estatísticas</h1>
-          <p className="text-muted-foreground text-sm mt-1">Veja como você está gastando seu tempo</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            Veja como você está gastando seu tempo
+          </p>
         </motion.div>
 
         {/* Period Selector */}
         <div className="flex items-center gap-1 p-1 bg-muted rounded-lg w-fit mb-6">
-          {(['day', 'week', 'month'] as Period[]).map((p) => (
+          {(["day", "week", "month"] as Period[]).map((p) => (
             <Button
               key={p}
               size="sm"
-              variant={period === p ? 'default' : 'ghost'}
+              variant={period === p ? "default" : "ghost"}
               className="h-8 px-4 text-xs rounded-md"
               onClick={() => setPeriod(p)}
             >
-              {p === 'day' ? 'Dia' : p === 'week' ? 'Semana' : 'Mês'}
+              {p === "day" ? "Dia" : p === "week" ? "Semana" : "Mês"}
             </Button>
           ))}
         </div>
@@ -63,7 +75,9 @@ const Stats = () => {
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                   <TrendingUp size={18} className="text-primary" />
                 </div>
-                <span className="text-muted-foreground text-sm">Tempo total foco</span>
+                <span className="text-muted-foreground text-sm">
+                  Tempo total foco
+                </span>
               </div>
               <p className="timer-display text-5xl font-bold text-primary timer-glow">
                 {stats.total}
@@ -98,13 +112,20 @@ const Stats = () => {
                     <div className="flex items-center gap-3">
                       <div
                         className="w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `hsl(var(${cat.colorVar}) / 0.15)` }}
+                        style={{
+                          backgroundColor: `hsl(var(${cat.colorVar}) / 0.15)`,
+                        }}
                       >
                         <Icon size={15} style={{ color }} />
                       </div>
-                      <span className="font-medium text-sm text-foreground">{cat.name}</span>
+                      <span className="font-medium text-sm text-foreground">
+                        {cat.name}
+                      </span>
                     </div>
-                    <span className="timer-display text-sm font-bold" style={{ color }}>
+                    <span
+                      className="timer-display text-sm font-bold"
+                      style={{ color }}
+                    >
                       {cat.hours.toFixed(1)}h
                     </span>
                   </div>
@@ -114,7 +135,11 @@ const Stats = () => {
                       style={{ backgroundColor: color }}
                       initial={{ width: 0 }}
                       animate={{ width: `${percentage}%` }}
-                      transition={{ delay: 0.4 + index * 0.08, duration: 0.6, ease: 'easeOut' }}
+                      transition={{
+                        delay: 0.4 + index * 0.08,
+                        duration: 0.6,
+                        ease: "easeOut",
+                      }}
                     />
                   </div>
                 </motion.div>

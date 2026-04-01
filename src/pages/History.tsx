@@ -1,11 +1,17 @@
-import { motion } from 'framer-motion';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Calendar, Clock } from 'lucide-react';
+import { motion } from "framer-motion";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Calendar, Clock } from "lucide-react";
 
 const History = () => {
-  const sessions: { id: number; category: string; duration: string; date: string; time: string }[] = [];
+  const sessions: {
+    id: number;
+    category: string;
+    duration: string;
+    date: string;
+    time: string;
+  }[] = [];
 
   return (
     <AppLayout>
@@ -17,7 +23,9 @@ const History = () => {
           className="mb-8"
         >
           <h1 className="text-2xl font-bold text-foreground">Histórico</h1>
-          <p className="text-muted-foreground text-sm mt-1">Suas sessões recentes de foco</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            Suas sessões recentes de foco
+          </p>
         </motion.div>
 
         <Card className="border-border/60">
@@ -62,10 +70,14 @@ const History = () => {
                         <Clock size={17} className="text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium text-sm text-foreground">{session.category}</p>
+                        <p className="font-medium text-sm text-foreground">
+                          {session.category}
+                        </p>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                           <Calendar size={11} />
-                          <span>{session.date} às {session.time}</span>
+                          <span>
+                            {session.date} às {session.time}
+                          </span>
                         </div>
                       </div>
                     </div>

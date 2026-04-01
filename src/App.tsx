@@ -6,12 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AccentProvider } from "@/contexts/AccentContext";
 import HomePage from "./pages/Home";
-import Index from "./pages/Index";
+import Index from "./pages/Timer/Index";
 import History from "./pages/History";
 import Stats from "./pages/Stats";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
- 
+
 const queryClient = new QueryClient();
 
 const App = () => (

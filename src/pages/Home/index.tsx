@@ -21,7 +21,7 @@ const weekStats = {
 
 const dailyAvg = {
   hours: 0,
-  label: "Média Diár ia",
+  label: "Média Diária",
   icon: Target,
   colorVar: "--category-custom",
 };
@@ -45,7 +45,7 @@ const HomePage = () => {
 
         {/* Stats Row */}
         <motion.div
-          className="mb-8 overflow-x-auto pb-2 md:overflow-visible md:pb-0"
+          className="mb-8 overflow-x-auto pb-2 md:overflow-visible md:pb-0 scrollbar-custom"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}

@@ -1,21 +1,29 @@
-import { motion } from 'framer-motion';
-import { Sun, Moon, Palette } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
-import { useAccent, accentMap, type AccentColor } from '@/contexts/AccentContext';
+import { motion } from "framer-motion";
+import { Sun, Moon, Palette } from "lucide-react";
+import { useTheme } from "next-themes";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import {
+  useAccent,
+  accentMap,
+  type AccentColor,
+} from "@/contexts/AccentContext";
 
 const accentOptions: { key: AccentColor; label: string }[] = [
-  { key: 'violet', label: 'Violeta' },
-  { key: 'cyan', label: 'Ciano' },
-  { key: 'rose', label: 'Rosa' },
-  { key: 'amber', label: 'Âmbar' },
-  { key: 'emerald', label: 'Esmeralda' },
-  { key: 'blue', label: 'Azul' },
+  { key: "violet", label: "Violeta" },
+  { key: "cyan", label: "Ciano" },
+  { key: "rose", label: "Rosa" },
+  { key: "amber", label: "Âmbar" },
+  { key: "emerald", label: "Esmeralda" },
+  { key: "blue", label: "Azul" },
 ];
 
 const Settings = () => {
@@ -58,44 +66,58 @@ const Settings = () => {
               </Label>
               <div className="grid grid-cols-2 gap-3">
                 <button
-                  onClick={() => setTheme('light')}
+                  onClick={() => setTheme("light")}
                   className={cn(
-                    'flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200',
-                    theme === 'light'
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border hover:border-muted-foreground/30'
+                    "flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200",
+                    theme === "light"
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-muted-foreground/30",
                   )}
                 >
-                  <div className={cn(
-                    'w-10 h-10 rounded-lg flex items-center justify-center',
-                    theme === 'light' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                  )}>
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center",
+                      theme === "light"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground",
+                    )}
+                  >
                     <Sun size={18} />
                   </div>
                   <div className="text-left">
                     <p className="text-sm font-medium text-foreground">Claro</p>
-                    <p className="text-xs text-muted-foreground">Aparência clara</p>
+                    <p className="text-xs text-muted-foreground">
+                      Aparência clara
+                    </p>
                   </div>
                 </button>
 
                 <button
-                  onClick={() => setTheme('dark')}
+                  onClick={() => setTheme("dark")}
                   className={cn(
-                    'flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200',
-                    theme === 'dark'
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border hover:border-muted-foreground/30'
+                    "flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200",
+                    theme === "dark"
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-muted-foreground/30",
                   )}
                 >
-                  <div className={cn(
-                    'w-10 h-10 rounded-lg flex items-center justify-center',
-                    theme === 'dark' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                  )}>
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center",
+                      theme === "dark"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground",
+                    )}
+                  >
                     <Moon size={18} />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">Escuro</p>
-                    <p className="text-xs text-muted-foreground">Aparência escura</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Escuro
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Aparência escura
+                    </p>
                   </div>
                 </button>
               </div>
@@ -127,23 +149,28 @@ const Settings = () => {
                         <button
                           onClick={() => setAccent(key)}
                           className={cn(
-                            'flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200',
+                            "flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200",
                             isSelected
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border hover:border-muted-foreground/30'
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-muted-foreground/30",
                           )}
                         >
                           <div
                             className={cn(
-                              'w-8 h-8 rounded-full shrink-0 transition-transform',
-                              isSelected && 'scale-110 ring-2 ring-offset-2 ring-offset-background ring-foreground/20'
+                              "w-8 h-8 rounded-full shrink-0 transition-transform",
+                              isSelected &&
+                                "scale-110 ring-2 ring-offset-2 ring-offset-background ring-foreground/20",
                             )}
                             style={{ backgroundColor: color }}
                           />
-                          <span className="text-sm font-medium text-foreground">{label}</span>
+                          <span className="text-sm font-medium text-foreground">
+                            {label}
+                          </span>
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs">{label}</TooltipContent>
+                      <TooltipContent side="top" className="text-xs">
+                        {label}
+                      </TooltipContent>
                     </Tooltip>
                   );
                 })}
