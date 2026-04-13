@@ -34,7 +34,7 @@ const Stats = () => {
 
   return (
     <AppLayout>
-      <div className="p-8 max-w-3xl">
+      <div className="p-8 max-w-5xl w-full mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}

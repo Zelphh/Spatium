@@ -32,7 +32,7 @@ const Settings = () => {
 
   return (
     <AppLayout>
-      <div className="p-8 max-w-2xl">
+      <div className="p-8 max-w-5xl mx-auto w-full">
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: -10 }}
@@ -86,9 +86,6 @@ const Settings = () => {
                   </div>
                   <div className="text-left">
                     <p className="text-sm font-medium text-foreground">Claro</p>
-                    <p className="text-xs text-muted-foreground">
-                      Aparência clara
-                    </p>
                   </div>
                 </button>
 
@@ -114,9 +111,6 @@ const Settings = () => {
                   <div className="text-left">
                     <p className="text-sm font-medium text-foreground">
                       Escuro
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Aparência escura
                     </p>
                   </div>
                 </button>
@@ -163,7 +157,7 @@ const Settings = () => {
                             )}
                             style={{ backgroundColor: color }}
                           />
-                          <span className="text-sm font-medium text-foreground">
+                          <span className="text-sm font-medium text-foreground overflow-hidden">
                             {label}
                           </span>
                         </button>

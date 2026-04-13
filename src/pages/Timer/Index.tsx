@@ -31,11 +31,11 @@ const Index = () => {
     }
   };
 
-  const canStart = selectedCategory !== null;
+  const canStart = true;
 
   return (
     <AppLayout>
-      <div className="p-8 max-w-5xl">
+      <div className="p-8 max-w-5xl w-full mx-auto">
         {/* Header */}
         <motion.div
           className="mb-8"
@@ -49,7 +49,7 @@ const Index = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="mb-5">
           {/* Left Column: Timer */}
           <div className="space-y-4">
             {/* Mode Selector */}
@@ -77,22 +77,22 @@ const Index = () => {
               canStart={canStart}
             />
           </div>
+        </div>
 
-          {/* Right Column: Task Details */}
-          <div className="space-y-4">
-            <TaskDescriptionCard
-              taskDescription={taskDescription}
-              onTaskDescriptionChange={setTaskDescription}
-              disabled={timer.isRunning}
-            />
+        {/* Right Column: Task Details */}
+        <div className="space-y-4">
+          <CategorySelectorCard
+            categories={DEFAULT_CATEGORIES}
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            disabled={timer.isRunning}
+          />
 
-            <CategorySelectorCard
-              categories={DEFAULT_CATEGORIES}
-              selectedCategory={selectedCategory}
-              onCategoryChange={handleCategoryChange}
-              disabled={timer.isRunning}
-            />
-          </div>
+          <TaskDescriptionCard
+            taskDescription={taskDescription}
+            onTaskDescriptionChange={setTaskDescription}
+            disabled={timer.isRunning}
+          />
         </div>
       </div>
     </AppLayout>

@@ -20,7 +20,7 @@ export function ModeSelector({
   disabled,
 }: ModeSelectorProps) {
   return (
-    <div className="flex items-center gap-2 p-1 bg-secondary rounded-lg">
+    <div className="flex justify-around items-center gap-2 p-1 bg-secondary rounded-lg">
       {modes.map((mode) => {
         const Icon = mode.icon;
         const isSelected = selectedMode === mode.id;

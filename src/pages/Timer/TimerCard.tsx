@@ -36,12 +36,12 @@ export function TimerCard({
       transition={{ delay: 0.15 }}
     >
       <Card className="border-border/60">
-        <CardContent className="p-8 flex flex-col items-center gap-8">
+        <CardContent className="p-3 flex flex-col items-center gap-8 relative">
           {mode === "custom" && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              className="flex items-center gap-3 w-full"
+              className="flex w-full items-center gap-3 lg:absolute lg:left-5 lg:top-3 lg:w-auto"
             >
               <Label
                 htmlFor="duration"
@@ -63,6 +63,7 @@ export function TimerCard({
           )}
 
           <TimerDisplay
+            mode={mode}
             formattedTime={formattedTime}
             isRunning={isRunning}
             progress={progress}
