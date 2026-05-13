@@ -10,7 +10,7 @@ PRAGMA journal_mode = WAL;
 --  USERS
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user (
-    id          INTEGER         PRIMARY KEY DEFAULT,
+    id          INTEGER         PRIMARY KEY AUTOINCREMENT,
     name        TEXT            NOT NULL,
     -- email    TEXT            UNIQUE NOT NULL,
     -- password TEXT            NOT NULL,
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS user (
 --  app_accent_color: 'violet' | 'cyan' | 'pink' | 'amber' | 'emerald' | 'blue'
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user_setting (
-    id            INTEGER    PRIMARY KEY DEFAULT,
-    user_id       TEXT       NOT NULL UNIQUE REFERENCES user(id) ON DELETE CASCADE,
+    id            INTEGER    PRIMARY KEY AUTOINCREMENT,
+    user_id       INTEGER    NOT NULL UNIQUE REFERENCES user(id) ON DELETE CASCADE,
     theme         TEXT       NOT NULL DEFAULT 'dark'   CHECK(theme IN ('light', 'dark')),
     accent_color  TEXT       NOT NULL DEFAULT 'violet' CHECK(accent_color IN ('violet', 'cyan', 'pink', 'amber', 'emerald', 'blue')),
     updated_at    TEXT       NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS user_setting (
 --  CATEGORIES  (built-in + user-created)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS category (
-    id          INTEGER PRIMARY KEY DEFAULT,
-    user_id     TEXT    NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES user(id) ON DELETE CASCADE,
     name        TEXT    NOT NULL,
     color       TEXT    NOT NULL DEFAULT '#8B5CF6',  -- hex color
     icon        TEXT,                                 -- optional icon identifier
@@ -49,12 +49,13 @@ CREATE TABLE IF NOT EXISTS category (
 --  mode:  'standard' | 'pomodoro' | 'custom'
 -- ============================================================
 CREATE TABLE IF NOT EXISTS timer_session (
-    id              INTEGER   PRIMARY KEY DEFAULT,
-    user_id         TEXT      NOT NULL REFERENCES user(id) ON DELETE CASCADE,
-    category_id     TEXT      REFERENCES category(id) ON DELETE SET NULL,
+    id              INTEGER   PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER   NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+    category_id     INTEGER   REFERENCES category(id) ON DELETE SET NULL,
     mode            TEXT      NOT NULL DEFAULT 'standard' CHECK(mode IN ('standard', 'pomodoro', 'custom')),
     duration_secs   INTEGER   NOT NULL DEFAULT 0,
-    notes           TEXT
+    notes           TEXT,
+    created_at      TEXT      NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
 -- ============================================================
@@ -63,7 +64,7 @@ CREATE TABLE IF NOT EXISTS timer_session (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS timer_session_event (
     id          INTEGER PRIMARY KEY, 
-    session_id  TEXT    REFERENCES timer_session(id) ON DELETE SET NULL,
+    session_id  INTEGER REFERENCES timer_session(id) ON DELETE SET NULL,
     event       TEXT    NOT NULL DEFAULT 'started' CHECK(event IN ('started', 'finished', 'paused', 'unpaused')),
     created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
@@ -72,8 +73,8 @@ CREATE TABLE IF NOT EXISTS timer_session_event (
 --  POMODORO CONFIG
 -- ============================================================
 CREATE TABLE IF NOT EXISTS pomodoro_config (
-    id                  INTEGER PRIMARY KEY DEFAULT,
-    user_id             TEXT    NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             INTEGER NOT NULL REFERENCES user(id) ON DELETE CASCADE,
     focus_duration_mins INTEGER NOT NULL DEFAULT 25,
     short_break_mins    INTEGER NOT NULL DEFAULT 5,
     long_break_mins     INTEGER NOT NULL DEFAULT 15,
@@ -86,16 +87,16 @@ CREATE TABLE IF NOT EXISTS pomodoro_config (
 --  KEYBOARD SHORTCUTS
 -- ============================================================
 CREATE TABLE IF NOT EXISTS action (
-    id            INTEGER PRIMARY KEY DEFAULT,
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
     action_label  TEXT    NOT NULL,
     action        TEXT    NOT NULL,
     default_key   TEXT    NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS shortcut_key (
-    id          INTEGER PRIMARY KEY DEFAULT,
-    user_id     TEXT    NOT NULL REFERENCES user(id) ON DELETE CASCADE,
-    action_id   TEXT    NOT NULL REFERENCES action(id) ON DELETE RESTRICT,
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+    action_id   INTEGER NOT NULL REFERENCES action(id) ON DELETE RESTRICT,
     keys        TEXT    NOT NULL,
     created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
@@ -145,12 +146,3 @@ SELECT
 FROM timer_session ts
 LEFT JOIN category c ON c.id = ts.category_id
 GROUP BY ts.user_id, c.name, c.color;
-
--- ============================================================
---  SEED DATA  (default categories)
---  Usage: execute after inserting a new user, replacing ?1 with the user id.
--- ============================================================
-INSERT INTO category (user_id, name, color, icon, is_default) VALUES
-    (?1, 'Work',  '#8B5CF6', 'briefcase', 1),
-    (?1, 'Study', '#3B82F6', 'book',      1),
-    (?1, 'Games', '#EC4899', 'gamepad',   1);
