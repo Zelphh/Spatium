@@ -6,7 +6,7 @@ import { TimerCard } from "@/pages/Timer/TimerCard";
 import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
 import { CategorySelectorCard } from "@/pages/Timer/CategorySelectorCard";
 import { useTimer } from "@/hooks/useTimer";
-import { TimerMode, Category, DEFAULT_CATEGORIES } from "@/types/timer";
+import { TimerMode, Category, DEFAULT_CATEGORIES } from "@/pages/type";
 
 const Index = () => {
   const [mode, setMode] = useState<TimerMode>("standard");

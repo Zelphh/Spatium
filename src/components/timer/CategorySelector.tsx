@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Category, CategoryType } from '@/types/timer';
+import { Category, CategoryType } from '@/pages/type';
 import { Briefcase, BookOpen, Gamepad2, Plus } from 'lucide-react';
 
 interface CategorySelectorProps {

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TimerMode } from "@/types/timer";
+import { TimerMode } from "@/pages/type";
 
 interface TimerDisplayProps {
   mode: TimerMode;

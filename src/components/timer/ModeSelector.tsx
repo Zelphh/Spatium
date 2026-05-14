@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TimerMode } from "@/types/timer";
+import { TimerMode } from "@/pages/type";
 import { Clock, Timer, Settings2 } from "lucide-react";
 
 interface ModeSelectorProps {
@@ -20,7 +20,7 @@ export function ModeSelector({
   disabled,
 }: ModeSelectorProps) {
   return (
-    <div className="flex justify-around items-center gap-2 p-1 bg-secondary rounded-lg">
+    <div className="flex items-center gap-2 p-1 bg-secondary rounded-lg w-full">
       {modes.map((mode) => {
         const Icon = mode.icon;
         const isSelected = selectedMode === mode.id;
@@ -31,7 +31,7 @@ export function ModeSelector({
             onClick={() => !disabled && onModeChange(mode.id)}
             disabled={disabled}
             className={`
-              relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium 
+              relative flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium 
               transition-colors duration-200 overflow-hidden
               ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
               ${isSelected ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}

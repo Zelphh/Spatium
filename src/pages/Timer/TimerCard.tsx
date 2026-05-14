@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TimerMode } from "@/types/timer";
+import { TimerMode } from "@/pages/type";
 import { TimerDisplay } from "@/components/timer/TimerDisplay";
 import { TimerControls } from "@/components/timer/TimerControls";
 import { Input } from "@/components/ui/input";

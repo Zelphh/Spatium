@@ -31,7 +31,7 @@ async fn main() {
                         println!("✓ Database iniciado com sucesso");
                     }
                     Err(e) => {
-                        eprintln!("✗ Failed to initialize database: {}", e);
+                        eprintln!("✗ Falha ao inicializar o banco de dados: {}", e);
                         std::process::exit(1);
                     }
                 }
@@ -50,7 +50,7 @@ async fn initialize_database(app_handle: &tauri::AppHandle) -> Result<AppState, 
     let database_url = get_database_url(app_handle);
     let pool = create_pool(&database_url).await;
     run_migrations(&pool).await;
-    run_seeds(&pool).await?;
+    run_seeds(&pool).await.expect("✗ Erro ao rodar seeds\n");
     
     Ok(AppState { db: pool })
 }

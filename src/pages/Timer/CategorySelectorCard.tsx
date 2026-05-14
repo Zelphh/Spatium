@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Category } from "@/types/timer";
+import { Category } from "@/pages/type";
 import { CategorySelector } from "@/components/timer/CategorySelector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";

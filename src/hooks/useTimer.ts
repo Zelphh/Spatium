@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { TimerMode, Category, DEFAULT_POMODORO_SETTINGS } from '@/types/timer';
+import { TimerMode, Category, DEFAULT_POMODORO_SETTINGS } from '@/pages/type';
 
 interface UseTimerProps {
   mode: TimerMode;

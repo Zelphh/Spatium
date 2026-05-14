@@ -12,7 +12,7 @@ pub async fn run_migrations(pool: &SqlitePool) {
 pub async fn run_seeds(pool: &SqlitePool) -> Result<(), sqlx::Error> {
 
     let exists: Option<i64> = sqlx::query_scalar(
-        "SELECT id FROM users LIMIT 1"
+        "SELECT id FROM user LIMIT 1"
     )
     .fetch_optional(pool)
     .await?;
@@ -23,7 +23,7 @@ pub async fn run_seeds(pool: &SqlitePool) -> Result<(), sqlx::Error> {
 
     let result = sqlx::query(
         r#"
-        INSERT INTO users (name, created_at)
+        INSERT INTO user (name, created_at)
         VALUES (?1, datetime('now'))
         "#
     )
@@ -39,11 +39,11 @@ pub async fn run_seeds(pool: &SqlitePool) -> Result<(), sqlx::Error> {
         ("Games", "#EC4899", "gamepad"),
     ];
 
-    for (name, color, icon) in categories {
+    for (name, color, icon) in categories { 
 
         sqlx::query(
             r#"
-            INSERT INTO categories
+            INSERT INTO category
             (user_id, name, color, icon, is_default)
             VALUES (?1, ?2, ?3, ?4, 1)
             "#
