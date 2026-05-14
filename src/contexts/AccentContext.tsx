@@ -41,11 +41,6 @@ export function AccentProvider({ children }: { children: ReactNode }) {
     const { h, s, l } = accentMap[accent];
     const root = document.documentElement;
     root.style.setProperty('--primary', `${h} ${s}% ${l}%`);
-    root.style.setProperty('--ring', `${h} ${s}% ${l}%`);
-    root.style.setProperty('--sidebar-primary', `${h} ${s}% ${l}%`);
-    root.style.setProperty('--sidebar-ring', `${h} ${s}% ${l}%`);
-    root.style.setProperty('--accent', `${h} ${s}% 20%`);
-    root.style.setProperty('--accent-foreground', `${h} ${s - 10}% ${l + 20}%`);
   }, [accent]);
 
   return <AccentContext.Provider value={{ accent, setAccent }}>{children}</AccentContext.Provider>;

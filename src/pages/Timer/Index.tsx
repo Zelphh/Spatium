@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { notify } from "@/components/notificationManager";
 import { ModeSelector } from "@/components/timer/ModeSelector";
 import { TimerCard } from "@/pages/Timer/TimerCard";
 import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
@@ -15,8 +16,30 @@ const Index = () => {
   );
   const [customDuration, setCustomDuration] = useState(25);
   const [taskDescription, setTaskDescription] = useState("");
+  const hasNotifiedCompletionRef = useRef(false);
 
   const timer = useTimer({ mode, customDuration });
+
+  useEffect(() => {
+    if (mode !== "custom") {
+      hasNotifiedCompletionRef.current = false;
+      return;
+    }
+
+    if (timer.isCompleted && !hasNotifiedCompletionRef.current) {
+      notify({
+        title: "Timer finalizado",
+        message: "O tempo do modo personalizado chegou ao fim.",
+        borderColor: "hsl(var(--primary))",
+        duration: 5000,
+      });
+      hasNotifiedCompletionRef.current = true;
+    }
+
+    if (!timer.isCompleted) {
+      hasNotifiedCompletionRef.current = false;
+    }
+  }, [mode, timer.isCompleted]);
 
   const handleModeChange = (newMode: TimerMode) => {
     if (!timer.isRunning) {

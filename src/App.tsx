@@ -1,5 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import NotificationManager from "@/components/notificationManager";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -20,7 +20,7 @@ const App = () => (
       <AccentProvider>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
+          <NotificationManager />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<HomePage />} />
