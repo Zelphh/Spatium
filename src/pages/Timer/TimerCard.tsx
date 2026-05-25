@@ -75,12 +75,6 @@ export function TimerCard({
             onReset={onReset}
             canStart={canStart}
           />
-
-          {!canStart && !isRunning && (
-            <p className="text-xs text-muted-foreground">
-              Selecione uma categoria para iniciar
-            </p>
-          )}
         </CardContent>
       </Card>
     </motion.div>

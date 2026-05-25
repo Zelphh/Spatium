@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS timer_session (
     mode            TEXT      NOT NULL DEFAULT 'standard' CHECK(mode IN ('standard', 'pomodoro', 'custom')),
     duration_secs   INTEGER   NOT NULL DEFAULT 0,
     notes           TEXT,
+    description     TEXT,
     created_at      TEXT      NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 

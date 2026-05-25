@@ -49,9 +49,7 @@ const Index = () => {
   };
 
   const handleCategoryChange = (category: Category) => {
-    if (!timer.isRunning) {
-      setSelectedCategory(category);
-    }
+    setSelectedCategory(category);
   };
 
   const canStart = true;
@@ -108,7 +106,7 @@ const Index = () => {
             categories={DEFAULT_CATEGORIES}
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
-            disabled={timer.isRunning}
+            disabled={false}
           />
 
           <TaskDescriptionCard

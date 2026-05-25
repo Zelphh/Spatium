@@ -2,11 +2,19 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod state;
+
+mod commands {
+    pub mod timer;
+    // pub mod category;
+    // pub mod task;
+}
 mod db {
     pub mod pool;
     pub mod connection;
     pub mod migrations;
 }
+
+use commands::timer::create_timer;
 
 use state::AppState;
 use tauri::Manager;
@@ -40,7 +48,7 @@ async fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            // commands
+            create_timer,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao rodar app");

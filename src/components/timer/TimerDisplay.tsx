@@ -65,7 +65,7 @@ export function TimerDisplay({
           ease: "easeInOut",
         }}
       >
-        <span className="timer-display text-6xl font-bold leading-none text-primary timer-glow">
+        <span className="timer-display text-7xl lg:text-9xl font-bold leading-none text-primary timer-glow">
           {formattedTime}
         </span>
         {isRunning && (
