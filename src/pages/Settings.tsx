@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Sun, Moon, Palette } from "lucide-react";
 import { useTheme } from "next-themes";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
@@ -31,8 +30,7 @@ const Settings = () => {
   const { accent, setAccent } = useAccent();
 
   return (
-    <AppLayout>
-      <div className="p-8 max-w-5xl mx-auto w-full">
+    <div className="p-8 max-w-5xl mx-auto w-full">
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: -10 }}
@@ -173,7 +171,6 @@ const Settings = () => {
           </Card>
         </motion.div>
       </div>
-    </AppLayout>
   );
 };
 

@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Clock, TrendingUp, Target } from "lucide-react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuickStartCard } from "./QuickStartCard";
 import { RecentHistoryCard } from "./RecentHistoryCard";
@@ -28,8 +27,7 @@ const dailyAvg = {
 
 const HomePage = () => {
   return (
-    <AppLayout>
-      <div className="p-8 max-w-6xl mx-auto w-full">
+    <div className="p-8 max-w-6xl mx-auto w-full">
         {/* Header */}
         <motion.div
           className="mb-8"
@@ -92,7 +90,6 @@ const HomePage = () => {
           <RecentHistoryCard />
         </div>
       </div>
-    </AppLayout>
   );
 };
 

@@ -1,10 +1,12 @@
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Timer, History, BarChart3, Home, Settings, Menu } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { memo } from "react";
+import type { LucideIcon } from "lucide-react";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -19,9 +21,58 @@ const navItems = [
   { path: "/settings", label: "Configurações", icon: Settings, end: true },
 ];
 
-export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
-  const location = useLocation();
+interface NavItemProps {
+  path: string;
+  label: string;
+  icon: LucideIcon;
+  end: boolean;
+  index: number;
+  isDark: boolean;
+}
 
+function SidebarNavItem({ path, label, icon: Icon, end, index, isDark }: NavItemProps) {
+  const match = useMatch({ path, end });
+  const isActive = !!match;
+
+  return (
+    <NavLink to={path}>
+      <motion.div
+        initial={{ opacity: 0, x: -16 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.07 }}
+        className={cn(
+          "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150",
+          isActive
+            ? isDark
+              ? "text-primary bg-accent"
+              : "text-primary bg-accent/15"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+        )}
+        whileHover={{ x: 2 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="sidebar-indicator"
+            className="pointer-events-none absolute inset-y-0 left-1 flex w-0.5 items-center justify-center"
+            initial={false}
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 35,
+            }}
+          >
+            <span className="h-5 w-full rounded-full bg-primary" />
+          </motion.div>
+        )}
+        <Icon size={17} className="shrink-0" />
+        <span>{label}</span>
+      </motion.div>
+    </NavLink>
+  );
+}
+
+export const Sidebar = memo(function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -71,51 +122,16 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           Menu
         </p>
         <div className="space-y-0.5">
-          {navItems.map((item, index) => {
-            const Icon = item.icon;
-            const isActive = item.end
-              ? location.pathname === item.path
-              : location.pathname.startsWith(item.path);
-
-            return (
-              <NavLink key={item.path} to={item.path}>
-                <motion.div
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.07 }}
-                  className={cn(
-                    "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150",
-                    isActive
-                      ? isDark
-                        ? "text-primary bg-accent"
-                        : "text-primary bg-accent/15"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
-                  )}
-                  whileHover={{ x: 2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="sidebar-indicator"
-                      className="pointer-events-none absolute inset-y-0 left-1 flex w-0.5 items-center justify-center"
-                      initial={false}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 35,
-                      }}
-                    >
-                      <span className="h-5 w-full rounded-full bg-primary" />
-                    </motion.div>
-                  )}
-                  <Icon size={17} className="shrink-0" />
-                  <span>{item.label}</span>
-                </motion.div>
-              </NavLink>
-            );
-          })}
+          {navItems.map((item, index) => (
+            <SidebarNavItem
+              key={item.path}
+              {...item}
+              index={index}
+              isDark={isDark}
+            />
+          ))}
         </div>
       </nav>
     </aside>
   );
-}
+});

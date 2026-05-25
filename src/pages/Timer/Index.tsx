@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { notify } from "@/components/notificationManager";
 import { ModeSelector } from "@/components/timer/ModeSelector";
 import { TimerCard } from "@/pages/Timer/TimerCard";
@@ -17,27 +16,31 @@ const Index = () => {
   const [customDuration, setCustomDuration] = useState(25);
   const [taskDescription, setTaskDescription] = useState("");
   const hasNotifiedCompletionRef = useRef(false);
+  const cancelNotificationRef = useRef(false);
 
   const timer = useTimer({ mode, customDuration });
 
+  const handleReset = useCallback(() => {
+    // Set synchronously before any re-render so stale effects don't fire the notification
+    cancelNotificationRef.current = true;
+    timer.reset();
+  }, [timer]);
+
   useEffect(() => {
-    if (mode !== "custom") {
+    if (mode !== "custom" || !timer.isCompleted) {
       hasNotifiedCompletionRef.current = false;
+      cancelNotificationRef.current = false;
       return;
     }
 
-    if (timer.isCompleted && !hasNotifiedCompletionRef.current) {
+    if (!hasNotifiedCompletionRef.current && !cancelNotificationRef.current) {
       notify({
         title: "Timer finalizado",
         message: "O tempo do modo personalizado chegou ao fim.",
         borderColor: "hsl(var(--primary))",
-        duration: 5000,
+        duration: 4000,
       });
       hasNotifiedCompletionRef.current = true;
-    }
-
-    if (!timer.isCompleted) {
-      hasNotifiedCompletionRef.current = false;
     }
   }, [mode, timer.isCompleted]);
 
@@ -55,8 +58,7 @@ const Index = () => {
   const canStart = true;
 
   return (
-    <AppLayout>
-      <div className="p-8 max-w-5xl w-full mx-auto">
+    <div className="p-8 max-w-5xl w-full mx-auto">
         {/* Header */}
         <motion.div
           className="mb-8"
@@ -94,7 +96,7 @@ const Index = () => {
               formattedTime={timer.formattedTime}
               progress={timer.progress}
               onToggle={timer.toggle}
-              onReset={timer.reset}
+              onReset={handleReset}
               canStart={canStart}
             />
           </div>
@@ -116,7 +118,6 @@ const Index = () => {
           />
         </div>
       </div>
-    </AppLayout>
   );
 };
 

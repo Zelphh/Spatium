@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock } from "lucide-react";
@@ -14,8 +13,7 @@ const History = () => {
   }[] = [];
 
   return (
-    <AppLayout>
-      <div className="p-8 max-w-5xl w-full mx-auto">
+    <div className="p-8 max-w-5xl w-full mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -91,7 +89,6 @@ const History = () => {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
   );
 };
 

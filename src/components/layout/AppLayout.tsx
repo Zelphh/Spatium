@@ -1,15 +1,11 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { cn } from "@/lib/utils";
-
 import { useMedia } from "@/hooks/useMedia";
 
-interface AppLayoutProps {
-  children: ReactNode;
-}
-
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isSmallScreen = useMedia("(max-width: 780px)");
 
@@ -46,7 +42,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           !isSmallScreen && sidebarOpen ? "ml-60" : "ml-8",
         )}
       >
-        {children}
+        <Outlet />
       </main>
     </div>
   );
