@@ -3,6 +3,12 @@
 
 mod state;
 
+mod models;
+
+mod services {
+    pub mod timer;
+}
+
 mod commands {
     pub mod timer;
     // pub mod category;
@@ -15,6 +21,7 @@ mod db {
 }
 
 use commands::timer::create_timer;
+use commands::timer::add_event_timer;
 
 use state::AppState;
 use tauri::Manager;
@@ -49,6 +56,7 @@ async fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             create_timer,
+            add_event_timer,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao rodar app");
