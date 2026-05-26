@@ -13,8 +13,8 @@ interface TimerCardProps {
   isRunning: boolean;
   formattedTime: string;
   progress: number | null;
-  onToggle: () => void;
-  onReset: () => void;
+  onToggle: () => void | Promise<void>;
+  onReset: () => void | Promise<void>;
   canStart: boolean;
 }
 

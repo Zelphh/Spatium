@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 
 interface TimerControlsProps {
   isRunning: boolean;
-  onToggle: () => void;
-  onReset: () => void;
+  onToggle: () => void | Promise<void>;
+  onReset: () => void | Promise<void>;
   canStart: boolean;
 }
 

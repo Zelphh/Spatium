@@ -5,6 +5,10 @@ mod state;
 
 mod models;
 
+mod repositories {
+    pub mod timer;
+}
+
 mod services {
     pub mod timer;
 }

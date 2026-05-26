@@ -18,7 +18,7 @@ const Index = () => {
   const hasNotifiedCompletionRef = useRef(false);
   const cancelNotificationRef = useRef(false);
 
-  const timer = useTimer({ mode, customDuration });
+  const timer = useTimer({ mode, customDuration, taskDescription });
 
   const handleReset = useCallback(() => {
     // Set synchronously before any re-render so stale effects don't fire the notification
@@ -47,7 +47,7 @@ const Index = () => {
   const handleModeChange = (newMode: TimerMode) => {
     if (!timer.isRunning) {
       setMode(newMode);
-      timer.reset();
+      timer.reset({ recordEvent: false });
     }
   };
 
