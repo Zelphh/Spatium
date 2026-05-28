@@ -73,16 +73,17 @@ pub async fn fetch_dashboard_data(
 
     let week_hours: f64 = sqlx::query_scalar(
         r#"
-        SELECT COALESCE(total_hours, 0.0)
-        FROM vw_weekly_summary
-        WHERE user_id = ?1 AND week_start = date('now', 'weekday 1', '-7 days')
+        SELECT COALESCE(ROUND(SUM(duration_secs) / 3600.0, 2), 0.0)
+        FROM timer_session
+        WHERE user_id = ?1
+          AND date(created_at) >= date('now', 'weekday 0', '-6 days')
+          AND date(created_at) < date(date('now', 'weekday 0', '-6 days'), '+7 days')
         "#,
     )
     .bind(user_id)
-    .fetch_optional(pool)
+    .fetch_one(pool)
     .await
-    .map_err(|error| format!("Falha ao buscar horas da semana: {error}"))?
-    .unwrap_or(0.0);
+    .map_err(|error| format!("Falha ao buscar horas da semana: {error}"))?;
 
     let daily_avg_hours: f64 = sqlx::query_scalar(
         r#"
@@ -114,7 +115,22 @@ pub async fn fetch_dashboard_data(
     .await
     .map_err(|error| format!("Falha ao buscar sessões recentes: {error}"))?;
 
-    let recent_total_secs = recent_sessions.iter().map(|session| session.duration_secs).sum();
+    let recent_total_secs: i64 = sqlx::query_scalar(
+        r#"
+        SELECT COALESCE(SUM(duration_secs), 0)
+        FROM (
+            SELECT duration_secs
+            FROM vw_history_sessions
+            WHERE user_id = ?1
+            ORDER BY datetime(created_at) DESC
+            LIMIT 5
+        )
+        "#,
+    )
+    .bind(user_id)
+    .fetch_one(pool)
+    .await
+    .map_err(|error| format!("Falha ao buscar total de sessões recentes: {error}"))?;
 
     Ok(DashboardDataResponse {
         today_hours,

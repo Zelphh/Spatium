@@ -4,16 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock } from "lucide-react";
 import { getHistoryData, type SessionListItem } from "@/lib/dashboard";
-
-const formatDuration = (totalSeconds: number) => {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${hours.toString().padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-};
+import { formatDuration } from "@/lib/time";
 
 const formatDate = (createdAt: string) => {
   const date = new Date(createdAt);
