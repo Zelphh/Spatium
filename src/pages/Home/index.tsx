@@ -1,31 +1,67 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, TrendingUp, Target } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuickStartCard } from "./QuickStartCard";
 import { RecentHistoryCard } from "./RecentHistoryCard";
-
-const todayStats = {
-  hours: 0,
-  label: "Hoje",
-  icon: Clock,
-  colorVar: "--category-work",
-};
-
-const weekStats = {
-  hours: 0,
-  label: "Esta Semana",
-  icon: TrendingUp,
-  colorVar: "--category-study",
-};
-
-const dailyAvg = {
-  hours: 0,
-  label: "Média Diária",
-  icon: Target,
-  colorVar: "--category-custom",
-};
+import { getDashboardData, type DashboardDataResponse } from "@/lib/dashboard";
 
 const HomePage = () => {
+  const [dashboardData, setDashboardData] = useState<DashboardDataResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    void getDashboardData()
+      .then((response) => {
+        if (!mounted) {
+          return;
+        }
+
+        setDashboardData(response);
+        setError(null);
+      })
+      .catch((fetchError) => {
+        if (!mounted) {
+          return;
+        }
+
+        setError(String(fetchError));
+      })
+      .finally(() => {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const todayStats = {
+    hours: dashboardData?.today_hours ?? 0,
+    label: "Hoje",
+    icon: Clock,
+    colorVar: "--category-work",
+  };
+
+  const weekStats = {
+    hours: dashboardData?.week_hours ?? 0,
+    label: "Esta Semana",
+    icon: TrendingUp,
+    colorVar: "--category-study",
+  };
+
+  const dailyAvg = {
+    hours: dashboardData?.daily_avg_hours ?? 0,
+    label: "Média Diária",
+    icon: Target,
+    colorVar: "--category-custom",
+  };
+
   return (
     <div className="p-8 max-w-6xl mx-auto w-full">
         {/* Header */}
@@ -87,7 +123,12 @@ const HomePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <QuickStartCard />
 
-          <RecentHistoryCard />
+          <RecentHistoryCard
+            sessions={dashboardData?.recent_sessions ?? []}
+            totalSeconds={dashboardData?.recent_total_secs ?? 0}
+            isLoading={isLoading}
+            error={error}
+          />
         </div>
       </div>
   );

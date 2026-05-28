@@ -26,6 +26,8 @@ mod db {
 
 use commands::timer::create_timer;
 use commands::timer::add_event_timer;
+use commands::timer::get_dashboard_data;
+use commands::timer::get_history_data;
 
 use state::AppState;
 use tauri::Manager;
@@ -61,6 +63,8 @@ async fn main() {
         .invoke_handler(tauri::generate_handler![
             create_timer,
             add_event_timer,
+            get_dashboard_data,
+            get_history_data,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao rodar app");
