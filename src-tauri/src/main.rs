@@ -7,14 +7,20 @@ mod models;
 
 mod repositories {
     pub mod timer;
+    pub mod dashboard;
+    pub mod history;
 }
 
 mod services {
     pub mod timer;
+    pub mod dashboard;
+    pub mod history;
 }
 
 mod commands {
     pub mod timer;
+    pub mod dashboard;
+    pub mod history;
     // pub mod category;
     // pub mod task;
 }
@@ -26,8 +32,8 @@ mod db {
 
 use commands::timer::create_timer;
 use commands::timer::add_event_timer;
-use commands::timer::get_dashboard_data;
-use commands::timer::get_history_data;
+use commands::dashboard::get_dashboard_data;
+use commands::history::get_history_data;
 
 use state::AppState;
 use tauri::Manager;

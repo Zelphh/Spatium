@@ -3,6 +3,8 @@ SELECT
     ts.id,
     ts.user_id,
     COALESCE(c.name, 'Sem categoria') AS category_name,
+    ts.mode,
+    COALESCE(ts.description, '-') AS description,
     ts.duration_secs,
     ts.created_at
 FROM timer_session ts

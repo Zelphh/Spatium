@@ -14,7 +14,7 @@ pub struct CreateTimerResponse {
     pub id: i64,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum TimerEventType {
     Started,
@@ -34,7 +34,7 @@ impl TimerEventType {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct AddTimerEventPayload {
     pub timer_id: i64,
     pub event: TimerEventType,
@@ -49,6 +49,8 @@ pub struct TimerEventResponse {
 pub struct SessionListItem {
     pub id: i64,
     pub category: String,
+    pub mode: String,
+    pub description: String,
     pub duration_secs: i64,
     pub created_at: String,
 }
