@@ -2,17 +2,38 @@ import { motion } from "framer-motion";
 import { Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import type { SessionListItem } from "@/lib/dashboard";
+import { formatDuration } from "@/lib/time";
 
-type RecentSession = {
-  id: number;
-  category: string;
-  duration: string;
-  time: string;
+interface RecentHistoryCardProps {
+  sessions: SessionListItem[];
+  totalSeconds: number;
+  isLoading: boolean;
+  error: string | null;
+}
+
+const formatSessionDateTime = (createdAt: string) => {
+  const date = new Date(createdAt);
+
+  if (Number.isNaN(date.getTime())) {
+    return createdAt;
+  }
+
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
-const recentSessions: RecentSession[] = [];
-
-export const RecentHistoryCard = () => (
+export const RecentHistoryCard = ({
+  sessions,
+  totalSeconds,
+  isLoading,
+  error,
+}: RecentHistoryCardProps) => (
   <motion.div
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
@@ -22,12 +43,16 @@ export const RecentHistoryCard = () => (
       <CardHeader className="pb-3 flex-row items-center justify-between">
         <CardTitle className="text-base font-semibold">Histórico Recente</CardTitle>
         <span className="text-xs text-muted-foreground timer-display">
-          Total: <span className="text-primary">00:00:00</span>
+          Total: <span className="text-primary">{formatDuration(totalSeconds)}</span>
         </span>
       </CardHeader>
       <Separator />
       <CardContent className="p-6">
-        {recentSessions.length === 0 ? (
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground text-center py-12">Carregando histórico...</p>
+        ) : error ? (
+          <p className="text-sm text-destructive text-center py-12">{error}</p>
+        ) : sessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 gap-3">
             <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
               <Clock size={26} className="text-muted-foreground" />
@@ -38,17 +63,17 @@ export const RecentHistoryCard = () => (
           </div>
         ) : (
           <div className="space-y-3">
-            {recentSessions.map((s) => (
+            {sessions.map((s) => (
               <div
                 key={s.id}
                 className="flex items-center justify-between p-3 bg-muted/40 rounded-lg"
               >
                 <div>
                   <p className="text-sm font-medium">{s.category}</p>
-                  <p className="text-xs text-muted-foreground">{s.time}</p>
+                  <p className="text-xs text-muted-foreground">{formatSessionDateTime(s.created_at)}</p>
                 </div>
                 <span className="timer-display text-sm text-primary font-medium">
-                  {s.duration}
+                  {formatDuration(s.duration_secs)}
                 </span>
               </div>
             ))}

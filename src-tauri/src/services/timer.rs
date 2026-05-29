@@ -3,9 +3,16 @@ use sqlx::SqlitePool;
 use crate::models::timer::{
     AddTimerEventPayload,
     CreateTimerResponse,
+    DashboardDataResponse,
+    HistoryDataResponse,
     TimerEventResponse,
 };
-use crate::repositories::timer::{insert_timer_event, insert_timer_session};
+use crate::repositories::timer::{
+    fetch_dashboard_data,
+    fetch_history_data,
+    insert_timer_event,
+    insert_timer_session,
+};
 
 pub async fn create_timer_service(
     pool: &SqlitePool,
@@ -37,4 +44,12 @@ pub async fn add_event_timer_service(
     Ok(TimerEventResponse {
         id: result.last_insert_rowid(),
     })
+}
+
+pub async fn get_dashboard_data_service(pool: &SqlitePool) -> Result<DashboardDataResponse, String> {
+    fetch_dashboard_data(pool, 1).await
+}
+
+pub async fn get_history_data_service(pool: &SqlitePool) -> Result<HistoryDataResponse, String> {
+    fetch_history_data(pool, 1).await
 }

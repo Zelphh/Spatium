@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
 #[derive(Deserialize)]
 pub struct CreateTimerPayload {
@@ -42,4 +43,27 @@ pub struct AddTimerEventPayload {
 #[derive(Serialize)]
 pub struct TimerEventResponse {
     pub id: i64,
+}
+
+#[derive(Serialize, FromRow)]
+pub struct SessionListItem {
+    pub id: i64,
+    pub category: String,
+    pub duration_secs: i64,
+    pub created_at: String,
+}
+
+#[derive(Serialize)]
+pub struct DashboardDataResponse {
+    pub today_hours: f64,
+    pub week_hours: f64,
+    pub daily_avg_hours: f64,
+    pub recent_total_secs: i64,
+    pub recent_sessions: Vec<SessionListItem>,
+}
+
+#[derive(Serialize)]
+pub struct HistoryDataResponse {
+    pub total_secs: i64,
+    pub sessions: Vec<SessionListItem>,
 }

@@ -1,16 +1,78 @@
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock } from "lucide-react";
+import { getHistoryData, type SessionListItem } from "@/lib/dashboard";
+import { formatDuration } from "@/lib/time";
+
+const formatDate = (createdAt: string) => {
+  const date = new Date(createdAt);
+
+  if (Number.isNaN(date.getTime())) {
+    return { date: createdAt, time: "--:--" };
+  }
+
+  return {
+    date: date.toLocaleDateString("pt-BR"),
+    time: date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  };
+};
 
 const History = () => {
-  const sessions: {
-    id: number;
-    category: string;
-    duration: string;
-    date: string;
-    time: string;
-  }[] = [];
+  const [sessions, setSessions] = useState<SessionListItem[]>([]);
+  const [totalSeconds, setTotalSeconds] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    void getHistoryData()
+      .then((response) => {
+        if (!mounted) {
+          return;
+        }
+
+        setSessions(response.sessions);
+        setTotalSeconds(response.total_secs);
+        setError(null);
+      })
+      .catch((fetchError) => {
+        if (!mounted) {
+          return;
+        }
+
+        setError(String(fetchError));
+      })
+      .finally(() => {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const enrichedSessions = useMemo(
+    () =>
+      sessions.map((session) => {
+        const formattedDate = formatDate(session.created_at);
+
+        return {
+          ...session,
+          duration: formatDuration(session.duration_secs),
+          date: formattedDate.date,
+          time: formattedDate.time,
+        };
+      }),
+    [sessions],
+  );
 
   return (
     <div className="p-8 max-w-5xl w-full mx-auto">
@@ -30,12 +92,16 @@ const History = () => {
           <CardHeader className="flex-row items-center justify-between pb-3">
             <CardTitle className="text-base font-semibold">Sessões</CardTitle>
             <span className="text-xs text-muted-foreground timer-display">
-              Total: <span className="text-primary">00:00:00</span>
+              Total: <span className="text-primary">{formatDuration(totalSeconds)}</span>
             </span>
           </CardHeader>
           <Separator />
           <CardContent className="p-6">
-            {sessions.length === 0 ? (
+            {isLoading ? (
+              <p className="text-sm text-muted-foreground text-center py-16">Carregando histórico...</p>
+            ) : error ? (
+              <p className="text-sm text-destructive text-center py-16">{error}</p>
+            ) : enrichedSessions.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -54,7 +120,7 @@ const History = () => {
               </motion.div>
             ) : (
               <div className="space-y-2">
-                {sessions.map((session, index) => (
+                {enrichedSessions.map((session, index) => (
                   <motion.div
                     key={session.id}
                     initial={{ opacity: 0, x: -16 }}
