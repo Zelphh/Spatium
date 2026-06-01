@@ -69,3 +69,10 @@ pub struct HistoryDataResponse {
     pub total_secs: i64,
     pub sessions: Vec<SessionListItem>,
 }
+
+
+#[derive(Deserialize, Debug)]
+pub struct ChangeCategoryPayload {
+    pub session_id: i64,
+    pub category_id: i64,
+}

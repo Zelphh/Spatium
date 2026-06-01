@@ -50,6 +50,8 @@ pub async fn fetch_dashboard_data(
         SELECT
             id,
             category_name AS category,
+            mode,
+            description,
             duration_secs,
             created_at
         FROM vw_history_sessions

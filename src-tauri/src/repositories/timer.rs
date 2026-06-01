@@ -2,7 +2,7 @@ use sqlx::{sqlite::SqliteQueryResult, SqlitePool};
 use chrono::{DateTime};
 
 use crate::models::timer::{
-    AddTimerEventPayload,
+    AddTimerEventPayload, ChangeCategoryPayload,
     CreateTimerPayload,
     // SessionListItem,
 };
@@ -30,12 +30,10 @@ pub async fn calc_session_duration_secs(pool: &SqlitePool, session_id: &i64) -> 
 
         match event.as_str() {
             "started" | "unpaused" => {
-              println!("Evento: {event}, Timestamp: {timestamp}");
                 start_time = Some(timestamp);
             }
             "paused" | "finished" => {
                 if let Some(start) = start_time {
-                  println!("Evento: {event}, Timestamp: {timestamp}, Start: {start}");
                     total_secs += timestamp - start;
                     start_time = None;
                 }
@@ -111,5 +109,25 @@ pub async fn insert_timer_event(
     .execute(pool)
     .await
     .map_err(|error| format!("Falha ao registrar evento do timer: {error}"))
+}
+
+pub async fn change_category(
+    pool: &SqlitePool,
+    payload: ChangeCategoryPayload,
+) -> Result<SqliteQueryResult, String> {
+    let ChangeCategoryPayload { session_id, category_id } = payload;
+
+    sqlx::query(
+        r#"
+        UPDATE timer_session
+        SET category_id = ?1
+        WHERE id = ?2
+        "#,
+    )
+    .bind(category_id)
+    .bind(session_id)
+    .execute(pool)
+    .await
+    .map_err(|error| format!("Falha ao vincular categoria à sessão do timer: {error}"))
 }
 

@@ -6,6 +6,7 @@ interface TimerControlsProps {
   isRunning: boolean;
   onToggle: () => void | Promise<void>;
   onReset: () => void | Promise<void>;
+  onStop: () => void | Promise<void>;
   canStart: boolean;
 }
 
@@ -13,6 +14,7 @@ export function TimerControls({
   isRunning,
   onToggle,
   onReset,
+  onStop,
   canStart,
 }: TimerControlsProps) {
   return (
@@ -51,6 +53,19 @@ export function TimerControls({
           {isRunning ? "Pausar" : "Iniciar"}
         </Button>
       </motion.div>
+      <div className="flex items-center gap-3">
+        {isRunning && (
+          <motion.div whileHover={{ scale: 0.95 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              onClick={onStop}
+              className="h-11 px-5 rounded-xl text-sm font-semibold border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+            >
+              Encerrar
+            </Button>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

@@ -15,6 +15,7 @@ interface TimerCardProps {
   progress: number | null;
   onToggle: () => void | Promise<void>;
   onReset: () => void | Promise<void>;
+  onStop: () => void | Promise<void>;
   canStart: boolean;
 }
 
@@ -27,6 +28,7 @@ export function TimerCard({
   progress,
   onToggle,
   onReset,
+  onStop,
   canStart,
 }: TimerCardProps) {
   return (
@@ -73,6 +75,7 @@ export function TimerCard({
             isRunning={isRunning}
             onToggle={onToggle}
             onReset={onReset}
+            onStop={onStop}
             canStart={canStart}
           />
         </CardContent>

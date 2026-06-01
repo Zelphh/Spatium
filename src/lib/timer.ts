@@ -23,6 +23,11 @@ export interface AddTimerEventResponse {
   id: number;
 }
 
+export interface ChangeCategoryPayload {
+  session_id: number;
+  category_id: number;
+}
+
 export function createTimer(payload: CreateTimerPayload) {
   return invoke<CreateTimerResponse>("create_timer", { payload });
 }
@@ -30,3 +35,17 @@ export function createTimer(payload: CreateTimerPayload) {
 export function addEventTimer(payload: AddTimerEventPayload) {
   return invoke<AddTimerEventResponse>("add_event_timer", { payload });
 }
+
+export function changeCategory(payload: ChangeCategoryPayload) {
+  return invoke("change_timer_category", { payload });
+}
+
+export const formatDuration = (totalSeconds: number) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};

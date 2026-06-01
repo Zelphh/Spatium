@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
-import { Category, CategoryType } from '@/pages/type';
-import { Briefcase, BookOpen, Gamepad2, Plus } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Category, CategoryType } from "@/pages/type";
+import { Briefcase, BookOpen, Gamepad2, Plus } from "lucide-react";
 
 interface CategorySelectorProps {
   categories: Category[];
@@ -17,10 +17,10 @@ const categoryIcons: Record<CategoryType, typeof Briefcase> = {
 };
 
 const categoryColorClasses: Record<CategoryType, string> = {
-  work: 'bg-category-work',
-  study: 'bg-category-study',
-  games: 'bg-category-games',
-  custom: 'bg-category-custom',
+  work: "bg-category-work",
+  study: "bg-category-study",
+  games: "bg-category-games",
+  custom: "bg-category-custom",
 };
 
 export function CategorySelector({
@@ -44,11 +44,11 @@ export function CategorySelector({
             className={`
               relative flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium
               border-2 transition-all duration-200
-              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+              ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
               ${
                 isSelected
-                  ? 'border-transparent shadow-md'
-                  : 'border-border hover:border-muted-foreground/30 bg-card'
+                  ? "border-transparent shadow-md"
+                  : "border-border hover:border-muted-foreground/30 bg-card"
               }
             `}
             whileHover={!disabled ? { scale: 1.03, y: -2 } : undefined}
@@ -59,13 +59,13 @@ export function CategorySelector({
                 layoutId="category-bg"
                 className={`absolute inset-0 ${colorClass} rounded-lg opacity-15`}
                 initial={false}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
             )}
             <span
               className={`
                 relative z-10 flex items-center gap-2
-                ${isSelected ? 'text-foreground' : 'text-muted-foreground'}
+                ${isSelected ? "text-foreground" : "text-muted-foreground"}
               `}
             >
               <span

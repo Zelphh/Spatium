@@ -2,11 +2,16 @@ use sqlx::SqlitePool;
 
 use crate::models::timer::{
     AddTimerEventPayload,
+    ChangeCategoryPayload,
     CreateTimerResponse,
     TimerEventResponse,
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session, calc_session_duration_secs, insert_timer_event, insert_timer_session
+    add_total_secs_to_session,
+    calc_session_duration_secs,
+    change_category,
+    insert_timer_event,
+    insert_timer_session
 };
 
 pub async fn create_timer_service(
@@ -36,15 +41,11 @@ pub async fn add_event_timer_service(
 ) -> Result<TimerEventResponse, String> {
     let result = insert_timer_event(pool, &payload).await?;
 
-    println!("Evento adicionado: {:?}", payload.event.as_str());
-    println!("Verify: {:?}", payload.event.as_str() == "finished");
     if payload.event.as_str() == "finished"  {
-        println!("Calculating total seconds for session_id: {}", payload.timer_id);
         let total_secs = 
             calc_session_duration_secs(pool, &payload.timer_id)
             .await
             .expect("Erro ao calculadar a duração da sessão do timer");
-        println!("Total seconds calculated: {total_secs}");
         let _ = add_total_secs_to_session(pool, payload.timer_id, total_secs)
             .await
             .expect("Erro ao adicionar tempo do timer");
@@ -55,3 +56,14 @@ pub async fn add_event_timer_service(
     })
 }
 
+pub async fn change_timer_category_service(
+    pool: &SqlitePool,
+    payload: ChangeCategoryPayload,
+) -> Result<(), String> {
+    println!("Alterando categoria da sessão do timer: {:?}", payload);
+    change_category(pool, payload)
+        .await
+        .expect("Erro ao alterar a categoria da sessão do timer {error}");
+
+    Ok(())
+}

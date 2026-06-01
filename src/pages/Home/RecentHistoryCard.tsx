@@ -3,7 +3,7 @@ import { Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { SessionListItem } from "@/lib/dashboard";
-import { formatDuration } from "@/lib/time";
+import { formatDuration } from "@/lib/timer";
 
 interface RecentHistoryCardProps {
   sessions: SessionListItem[];
@@ -41,15 +41,20 @@ export const RecentHistoryCard = ({
   >
     <Card className="border-border/60 h-full">
       <CardHeader className="pb-3 flex-row items-center justify-between">
-        <CardTitle className="text-base font-semibold">Histórico Recente</CardTitle>
+        <CardTitle className="text-base font-semibold">
+          Histórico Recente
+        </CardTitle>
         <span className="text-xs text-muted-foreground timer-display">
-          Total: <span className="text-primary">{formatDuration(totalSeconds)}</span>
+          Total:{" "}
+          <span className="text-primary">{formatDuration(totalSeconds)}</span>
         </span>
       </CardHeader>
       <Separator />
       <CardContent className="p-6">
         {isLoading ? (
-          <p className="text-sm text-muted-foreground text-center py-12">Carregando histórico...</p>
+          <p className="text-sm text-muted-foreground text-center py-12">
+            Carregando histórico...
+          </p>
         ) : error ? (
           <p className="text-sm text-destructive text-center py-12">{error}</p>
         ) : sessions.length === 0 ? (
@@ -70,7 +75,9 @@ export const RecentHistoryCard = ({
               >
                 <div>
                   <p className="text-sm font-medium">{s.category}</p>
-                  <p className="text-xs text-muted-foreground">{formatSessionDateTime(s.created_at)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatSessionDateTime(s.created_at)}
+                  </p>
                 </div>
                 <span className="timer-display text-sm text-primary font-medium">
                   {formatDuration(s.duration_secs)}
