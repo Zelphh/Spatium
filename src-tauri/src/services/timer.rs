@@ -1,17 +1,10 @@
 use sqlx::SqlitePool;
 
 use crate::models::timer::{
-    AddTimerEventPayload,
-    ChangeCategoryPayload,
-    CreateTimerResponse,
-    TimerEventResponse,
+    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session,
-    calc_session_duration_secs,
-    change_category,
-    insert_timer_event,
-    insert_timer_session
+    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, insert_timer_event, insert_timer_session
 };
 
 pub async fn create_timer_service(
@@ -60,10 +53,20 @@ pub async fn change_timer_category_service(
     pool: &SqlitePool,
     payload: ChangeCategoryPayload,
 ) -> Result<(), String> {
-    println!("Alterando categoria da sessão do timer: {:?}", payload);
     change_category(pool, payload)
         .await
         .expect("Erro ao alterar a categoria da sessão do timer {error}");
+
+    Ok(())
+}
+
+pub async fn change_timer_description_service(
+    pool: &SqlitePool,
+    payload: ChangeDescriptionPayload,
+) -> Result<(), String> {
+    change_description(pool, payload)
+        .await
+        .expect("Erro ao alterar a descrição da sessão do timer {error}");
 
     Ok(())
 }

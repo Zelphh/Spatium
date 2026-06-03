@@ -7,6 +7,7 @@ pub struct CreateTimerPayload {
     pub duration: i64,
     pub description: Option<String>,
     pub mode: String,
+    pub category_id: Option<i64>,
 }
 
 #[derive(Serialize)]
@@ -75,4 +76,10 @@ pub struct HistoryDataResponse {
 pub struct ChangeCategoryPayload {
     pub session_id: i64,
     pub category_id: i64,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ChangeDescriptionPayload {
+    pub session_id: i64,
+    pub description: String,
 }

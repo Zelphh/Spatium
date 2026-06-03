@@ -2,8 +2,7 @@ use sqlx::{sqlite::SqliteQueryResult, SqlitePool};
 use chrono::{DateTime};
 
 use crate::models::timer::{
-    AddTimerEventPayload, ChangeCategoryPayload,
-    CreateTimerPayload,
+    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, CreateTimerPayload
     // SessionListItem,
 };
 
@@ -74,12 +73,13 @@ pub async fn insert_timer_session(
         duration,
         description,
         mode,
+        category_id,
     } = payload;
 
     sqlx::query(
         r#"
-        INSERT INTO timer_session (user_id, mode, duration_secs, notes, description)
-        VALUES (?1, ?2, ?3, ?4, ?5)
+        INSERT INTO timer_session (user_id, mode, duration_secs, notes, description, category_id)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6)
         "#,
     )
     .bind(1_i64)
@@ -87,6 +87,7 @@ pub async fn insert_timer_session(
     .bind(duration)
     .bind(name)
     .bind(description)
+    .bind(category_id)
     .execute(pool)
     .await
     .map_err(|error| format!("Falha ao criar a sessão do timer: {error}"))
@@ -129,5 +130,25 @@ pub async fn change_category(
     .execute(pool)
     .await
     .map_err(|error| format!("Falha ao vincular categoria à sessão do timer: {error}"))
+}
+
+pub async fn change_description(
+    pool: &SqlitePool,
+    payload: ChangeDescriptionPayload,
+) -> Result<SqliteQueryResult, String> {
+    let ChangeDescriptionPayload { session_id, description } = payload;
+
+    sqlx::query(
+        r#"
+        UPDATE timer_session
+        SET description = ?1
+        WHERE id = ?2
+        "#,
+    )
+    .bind(description)
+    .bind(session_id)
+    .execute(pool)
+    .await
+    .map_err(|error| format!("Falha ao vincular descrição à sessão do timer: {error}"))
 }
 

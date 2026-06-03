@@ -23,7 +23,7 @@ export function TaskDescriptionCard({
       <Card className="border-border/60">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            O que você está trabalhando?
+            Descrição da Tarefa
           </CardTitle>
         </CardHeader>
         <Separator />

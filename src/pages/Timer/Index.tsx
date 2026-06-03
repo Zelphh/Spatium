@@ -7,7 +7,7 @@ import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
 import { CategorySelectorCard } from "@/pages/Timer/CategorySelectorCard";
 import { useTimer } from "@/hooks/useTimer";
 import { TimerMode, Category, DEFAULT_CATEGORIES } from "@/pages/type";
-import { changeCategory } from "@/lib/timer";
+import { changeCategory, changeDescription } from "@/lib/timer";
 
 const Index = () => {
   const [mode, setMode] = useState<TimerMode>("standard");
@@ -19,7 +19,12 @@ const Index = () => {
   const hasNotifiedCompletionRef = useRef(false);
   const cancelNotificationRef = useRef(false);
 
-  const timer = useTimer({ mode, customDuration, taskDescription });
+  const timer = useTimer({
+    mode,
+    customDuration,
+    taskDescription,
+    categoryId: selectedCategory?.id ? Number(selectedCategory.id) : null,
+  });
 
   const handleReset = useCallback(() => {
     // Set synchronously before any re-render so stale effects don't fire the notification
@@ -53,8 +58,6 @@ const Index = () => {
   };
 
   const handleCategoryChange = (category: Category) => {
-    console.log("Categoria selecionada:", category.id);
-    console.log("Timer session ID:", timer.sessionId);
     if (timer.sessionId !== null && timer.sessionId > 0) {
       changeCategory({
         session_id: timer.sessionId,
@@ -62,6 +65,16 @@ const Index = () => {
       });
     }
     setSelectedCategory(category);
+  };
+
+   const handleDescriptionChange = (description: string) => {
+    if (timer.sessionId !== null && timer.sessionId > 0) {
+      changeDescription({
+        session_id: timer.sessionId,
+        description,
+      });
+    }
+    setTaskDescription(description);
   };
 
   const canStart = true;
@@ -123,7 +136,7 @@ const Index = () => {
 
         <TaskDescriptionCard
           taskDescription={taskDescription}
-          onTaskDescriptionChange={setTaskDescription}
+          onTaskDescriptionChange={handleDescriptionChange}
           disabled={false}
         />
       </div>

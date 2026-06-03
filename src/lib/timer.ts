@@ -8,6 +8,7 @@ export interface CreateTimerPayload {
   duration: number;
   description?: string;
   mode: TimerMode;
+  category_id?: number;
 }
 
 export interface CreateTimerResponse {
@@ -28,6 +29,11 @@ export interface ChangeCategoryPayload {
   category_id: number;
 }
 
+export interface ChangeDescriptionPayload {
+  session_id: number;
+  description: string;
+}
+
 export function createTimer(payload: CreateTimerPayload) {
   return invoke<CreateTimerResponse>("create_timer", { payload });
 }
@@ -38,6 +44,10 @@ export function addEventTimer(payload: AddTimerEventPayload) {
 
 export function changeCategory(payload: ChangeCategoryPayload) {
   return invoke("change_timer_category", { payload });
+}
+
+export function changeDescription(payload: ChangeDescriptionPayload) {
+  return invoke("change_timer_description", { payload });
 }
 
 export const formatDuration = (totalSeconds: number) => {

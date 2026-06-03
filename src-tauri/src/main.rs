@@ -33,6 +33,7 @@ mod db {
 use commands::timer::create_timer;
 use commands::timer::add_event_timer;
 use commands::timer::change_timer_category;
+use commands::timer::change_timer_description;
 use commands::dashboard::get_dashboard_data;
 use commands::history::get_history_data;
 
@@ -71,6 +72,7 @@ async fn main() {
             create_timer,
             add_event_timer,
             change_timer_category,
+            change_timer_description,
             get_dashboard_data,
             get_history_data,
         ])

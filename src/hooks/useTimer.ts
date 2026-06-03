@@ -11,6 +11,7 @@ interface UseTimerProps {
   mode: TimerMode;
   customDuration?: number;
   taskDescription?: string;
+  categoryId?: number | null;
 }
 
 interface ResetOptions {
@@ -21,6 +22,7 @@ export function useTimer({
   mode,
   customDuration = 25,
   taskDescription = '',
+  categoryId,
 }: UseTimerProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -59,8 +61,9 @@ export function useTimer({
       duration: targetTime ?? 0,
       description: trimmedDescription || undefined,
       mode,
+      ...(categoryId ? { category_id: categoryId } : {}),
     };
-  }, [mode, targetTime, taskDescription]);
+  }, [categoryId, mode, targetTime, taskDescription]);
 
   const sendEvent = useCallback(async (event: TimerEvent) => {
     const currentSessionId = sessionIdRef.current;
