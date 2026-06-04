@@ -1,10 +1,10 @@
 use sqlx::SqlitePool;
 
 use crate::models::timer::{
-    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, CreateTimerResponse, TimerEventResponse
+    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, insert_timer_event, insert_timer_session
+    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, insert_timer_event, insert_timer_session
 };
 
 pub async fn create_timer_service(
@@ -67,6 +67,17 @@ pub async fn change_timer_description_service(
     change_description(pool, payload)
         .await
         .expect("Erro ao alterar a descrição da sessão do timer {error}");
+
+    Ok(())
+}
+
+pub async fn change_timer_notes_service(
+    pool: &SqlitePool,
+    payload: ChangeNotesPayload,
+) -> Result<(), String> {
+    change_notes(pool, payload)
+        .await
+        .expect("Erro ao alterar as notas da sessão do timer {error}");
 
     Ok(())
 }

@@ -16,7 +16,7 @@ export function TimerDisplay({
 }: TimerDisplayProps) {
   const containerSize =
     mode === "standard"
-      ? "h-40 w-56 sm:h-40 sm:w-60"
+      ? "min-h-[100px] w-full"
       : "h-64 w-64 sm:h-72 sm:w-72";
 
   return (
@@ -65,7 +65,7 @@ export function TimerDisplay({
           ease: "easeInOut",
         }}
       >
-        <span className="timer-display text-7xl lg:text-9xl font-bold leading-none text-primary timer-glow">
+        <span className="timer-display text-7xl font-bold leading-none text-primary timer-glow">
           {formattedTime}
         </span>
         {isRunning && (

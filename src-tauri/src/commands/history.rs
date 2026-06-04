@@ -1,5 +1,5 @@
 use crate::state::AppState;
-use crate::models::timer::HistoryDataResponse;
+use crate::models::history::HistoryDataResponse;
 use crate::services::history::get_history_data_service;
 
 use tauri::State;

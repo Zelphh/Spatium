@@ -6,17 +6,18 @@ interface CategorySelectorProps {
   categories: Category[];
   selectedCategory: Category | null;
   onCategoryChange: (category: Category) => void;
+  onAddCategory?: () => void;
   disabled?: boolean;
 }
 
-const categoryIcons: Record<CategoryType, typeof Briefcase> = {
+export const categoryIcons: Record<CategoryType, typeof Briefcase> = {
   work: Briefcase,
   study: BookOpen,
   games: Gamepad2,
   custom: Plus,
 };
 
-const categoryColorClasses: Record<CategoryType, string> = {
+export const categoryColorClasses: Record<CategoryType, string> = {
   work: "bg-category-work",
   study: "bg-category-study",
   games: "bg-category-games",
@@ -27,10 +28,11 @@ export function CategorySelector({
   categories,
   selectedCategory,
   onCategoryChange,
+  onAddCategory,
   disabled,
 }: CategorySelectorProps) {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-3">
+    <div className="flex flex-wrap items-center gap-3 justify-center">
       {categories.map((category) => {
         const Icon = categoryIcons[category.type];
         const isSelected = selectedCategory?.id === category.id;
@@ -81,6 +83,17 @@ export function CategorySelector({
           </motion.button>
         );
       })}
+
+      {/* Add category button */}
+      <motion.button
+        onClick={onAddCategory}
+        className="flex items-center justify-center w-9 h-9 rounded-lg border-2 border-dashed border-border text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-colors duration-200"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        title="Adicionar categoria"
+      >
+        <Plus size={16} />
+      </motion.button>
     </div>
   );
 }

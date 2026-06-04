@@ -38,8 +38,9 @@ export const RecentHistoryCard = ({
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.4, delay: 0.25 }}
+    style={{ height: "380px" }}
   >
-    <Card className="border-border/60 h-full">
+    <Card className="border-border/60 flex h-full flex-col overflow-hidden">
       <CardHeader className="pb-3 flex-row items-center justify-between">
         <CardTitle className="text-base font-semibold">
           Histórico Recente
@@ -50,7 +51,7 @@ export const RecentHistoryCard = ({
         </span>
       </CardHeader>
       <Separator />
-      <CardContent className="p-6">
+      <CardContent className="min-h-0 flex-1 overflow-y-auto p-6 pr-3">
         {isLoading ? (
           <p className="text-sm text-muted-foreground text-center py-12">
             Carregando histórico...

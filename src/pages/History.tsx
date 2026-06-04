@@ -3,8 +3,9 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock } from "lucide-react";
-import { getHistoryData, type SessionListItem } from "@/lib/dashboard";
+import { type SessionListItem } from "@/lib/dashboard";
 import { formatDuration } from "@/lib/timer";
+import { getHistoryData } from "@/lib/history";
 
 const formatDate = (createdAt: string) => {
   const date = new Date(createdAt);

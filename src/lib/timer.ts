@@ -34,6 +34,11 @@ export interface ChangeDescriptionPayload {
   description: string;
 }
 
+export interface ChangeNotesPayload {
+  session_id: number;
+  notes: string;
+}
+
 export function createTimer(payload: CreateTimerPayload) {
   return invoke<CreateTimerResponse>("create_timer", { payload });
 }
@@ -48,6 +53,10 @@ export function changeCategory(payload: ChangeCategoryPayload) {
 
 export function changeDescription(payload: ChangeDescriptionPayload) {
   return invoke("change_timer_description", { payload });
+}
+
+export function changeNotes(payload: ChangeNotesPayload) {
+  return invoke("change_timer_notes", { payload });
 }
 
 export const formatDuration = (totalSeconds: number) => {

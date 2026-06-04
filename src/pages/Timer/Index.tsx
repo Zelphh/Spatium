@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import { notify } from "@/components/notificationManager";
 import { ModeSelector } from "@/components/timer/ModeSelector";
 import { TimerCard } from "@/pages/Timer/TimerCard";
-import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
 import { CategorySelectorCard } from "@/pages/Timer/CategorySelectorCard";
+import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
 import { useTimer } from "@/hooks/useTimer";
 import { TimerMode, Category, DEFAULT_CATEGORIES } from "@/pages/type";
-import { changeCategory, changeDescription } from "@/lib/timer";
+import { changeCategory, changeDescription, changeNotes } from "@/lib/timer";
 
 const Index = () => {
   const [mode, setMode] = useState<TimerMode>("standard");
@@ -16,6 +16,7 @@ const Index = () => {
   );
   const [customDuration, setCustomDuration] = useState(25);
   const [taskDescription, setTaskDescription] = useState("");
+  const [notes, setNotes] = useState("");
   const hasNotifiedCompletionRef = useRef(false);
   const cancelNotificationRef = useRef(false);
 
@@ -27,7 +28,6 @@ const Index = () => {
   });
 
   const handleReset = useCallback(() => {
-    // Set synchronously before any re-render so stale effects don't fire the notification
     cancelNotificationRef.current = true;
     timer.reset();
   }, [timer]);
@@ -67,7 +67,7 @@ const Index = () => {
     setSelectedCategory(category);
   };
 
-   const handleDescriptionChange = (description: string) => {
+  const handleDescriptionChange = (description: string) => {
     if (timer.sessionId !== null && timer.sessionId > 0) {
       changeDescription({
         session_id: timer.sessionId,
@@ -77,13 +77,20 @@ const Index = () => {
     setTaskDescription(description);
   };
 
-  const canStart = true;
+  const handleNotesChange = (value: string) => {
+    if (timer.sessionId !== null && timer.sessionId > 0) {
+      changeNotes({
+        session_id: timer.sessionId,
+        notes: value,
+      });
+    }
+    setNotes(value);
+  };
 
   return (
-    <div className="p-8 max-w-5xl w-full mx-auto">
+    <div className="p-6 w-full mx-auto flex flex-col gap-4">
       {/* Header */}
       <motion.div
-        className="mb-8"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
@@ -94,52 +101,51 @@ const Index = () => {
         </p>
       </motion.div>
 
-      <div className="mb-5">
-        {/* Left Column: Timer */}
-        <div className="space-y-4">
-          {/* Mode Selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <ModeSelector
-              selectedMode={mode}
-              onModeChange={handleModeChange}
-              disabled={timer.isRunning}
-            />
-          </motion.div>
-
-          <TimerCard
-            mode={mode}
-            customDuration={customDuration}
-            onCustomDurationChange={setCustomDuration}
-            isRunning={timer.isRunning}
-            formattedTime={timer.formattedTime}
-            progress={timer.progress}
-            onToggle={timer.toggle}
-            onReset={handleReset}
-            onStop={handleReset}
-            canStart={canStart}
-          />
-        </div>
-      </div>
-
-      {/* Right Column: Task Details */}
-      <div className="space-y-4">
-        <CategorySelectorCard
-          categories={DEFAULT_CATEGORIES}
-          selectedCategory={selectedCategory}
-          onCategoryChange={handleCategoryChange}
-          disabled={false}
+      {/* Mode Selector */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <ModeSelector
+          selectedMode={mode}
+          onModeChange={handleModeChange}
+          disabled={timer.isRunning}
         />
+      </motion.div>
 
-        <TaskDescriptionCard
-          taskDescription={taskDescription}
-          onTaskDescriptionChange={handleDescriptionChange}
-          disabled={false}
-        />
-      </div>
+      {/* Timer Card with description input */}
+      <TimerCard
+        mode={mode}
+        customDuration={customDuration}
+        onCustomDurationChange={setCustomDuration}
+        isRunning={timer.isRunning}
+        formattedTime={timer.formattedTime}
+        progress={timer.progress}
+        onToggle={timer.toggle}
+        onReset={handleReset}
+        onStop={handleReset}
+        canStart={true}
+        taskDescription={taskDescription}
+        onTaskDescriptionChange={handleDescriptionChange}
+        selectedCategory={selectedCategory}
+      />
+
+      {/* Category Selection Card */}
+      <CategorySelectorCard
+        categories={DEFAULT_CATEGORIES}
+        selectedCategory={selectedCategory}
+        onCategoryChange={handleCategoryChange}
+        onAddCategory={() => {}}
+        disabled={false}
+      />
+
+      {/* Notes Card */}
+      <TaskDescriptionCard
+        notes={notes}
+        onNotesChange={handleNotesChange}
+        disabled={false}
+      />
     </div>
   );
 };

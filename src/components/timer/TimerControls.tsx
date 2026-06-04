@@ -25,7 +25,7 @@ export function TimerControls({
           variant="outline"
           size="icon"
           onClick={onReset}
-          className="w-12 h-12 rounded-full border-border"
+          className="w-12 h-12 rounded-full border-border border-primary/30"
         >
           <RotateCcw size={18} />
         </Button>
@@ -54,17 +54,15 @@ export function TimerControls({
         </Button>
       </motion.div>
       <div className="flex items-center gap-3">
-        {isRunning && (
-          <motion.div whileHover={{ scale: 0.95 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="outline"
-              onClick={onStop}
-              className="h-11 px-5 rounded-xl text-sm font-semibold border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
-            >
-              Encerrar
-            </Button>
-          </motion.div>
-        )}
+        <motion.div whileHover={{ scale: 0.95 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant="outline"
+            onClick={onStop}
+            className="h-11 px-5 rounded-xl text-sm font-semibold border-primary/30 hover:bg-destructive/10 hover:text-destructive"
+          >
+            Encerrar
+          </Button>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 use sqlx::SqlitePool;
 
-use crate::models::timer::{DashboardDataResponse, SessionListItem};
+use crate::models::dashboard::{DashboardDataResponse, SerieData, SessionListItem};
 
 pub async fn fetch_dashboard_data(
     pool: &SqlitePool,
@@ -90,3 +90,11 @@ pub async fn fetch_dashboard_data(
         recent_sessions,
     })
 }
+
+// pub async fn fetch_series_data(
+//     pool: &SqlitePool,
+//     user_id: i64,
+//     periodicity: String,
+// ) -> Result<Vec<SerieData>, String> {
+    
+// }

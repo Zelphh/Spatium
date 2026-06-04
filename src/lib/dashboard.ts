@@ -15,15 +15,8 @@ export interface DashboardDataResponse {
   recent_sessions: SessionListItem[];
 }
 
-export interface HistoryDataResponse {
-  total_secs: number;
-  sessions: SessionListItem[];
-}
-
 export function getDashboardData() {
   return invoke<DashboardDataResponse>("get_dashboard_data");
 }
 
-export function getHistoryData() {
-  return invoke<HistoryDataResponse>("get_history_data");
-}
+

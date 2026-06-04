@@ -2,7 +2,7 @@ use sqlx::{sqlite::SqliteQueryResult, SqlitePool};
 use chrono::{DateTime};
 
 use crate::models::timer::{
-    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, CreateTimerPayload
+    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateTimerPayload
     // SessionListItem,
 };
 
@@ -150,5 +150,25 @@ pub async fn change_description(
     .execute(pool)
     .await
     .map_err(|error| format!("Falha ao vincular descrição à sessão do timer: {error}"))
+}
+
+pub async fn change_notes(
+    pool: &SqlitePool,
+    payload: ChangeNotesPayload,
+) -> Result<SqliteQueryResult, String> {
+    let ChangeNotesPayload { session_id, notes } = payload;
+
+    sqlx::query(
+        r#"
+        UPDATE timer_session
+        SET notes = ?1
+        WHERE id = ?2
+        "#,
+    )
+    .bind(notes)
+    .bind(session_id)
+    .execute(pool)
+    .await
+    .map_err(|error| format!("Falha ao vincular notas à sessão do timer: {error}"))
 }
 

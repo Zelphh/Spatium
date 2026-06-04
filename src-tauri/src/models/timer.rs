@@ -46,32 +46,7 @@ pub struct TimerEventResponse {
     pub id: i64,
 }
 
-#[derive(Serialize, FromRow)]
-pub struct SessionListItem {
-    pub id: i64,
-    pub category: String,
-    pub mode: String,
-    pub description: String,
-    pub duration_secs: i64,
-    pub created_at: String,
-}
-
-#[derive(Serialize)]
-pub struct DashboardDataResponse {
-    pub today_hours: f64,
-    pub week_hours: f64,
-    pub daily_avg_hours: f64,
-    pub recent_total_secs: i64,
-    pub recent_sessions: Vec<SessionListItem>,
-}
-
-#[derive(Serialize)]
-pub struct HistoryDataResponse {
-    pub total_secs: i64,
-    pub sessions: Vec<SessionListItem>,
-}
-
-
+// Dashboard / history models moved to `models::dashboard`
 #[derive(Deserialize, Debug)]
 pub struct ChangeCategoryPayload {
     pub session_id: i64,
@@ -82,4 +57,10 @@ pub struct ChangeCategoryPayload {
 pub struct ChangeDescriptionPayload {
     pub session_id: i64,
     pub description: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ChangeNotesPayload {
+    pub session_id: i64,
+    pub notes: String,
 }

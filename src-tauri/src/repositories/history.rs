@@ -1,6 +1,7 @@
 use sqlx::SqlitePool;
 
-use crate::models::timer::{HistoryDataResponse, SessionListItem};
+use crate::models::dashboard::{SessionListItem};
+use crate::models::history::{HistoryDataResponse};
 
 pub async fn fetch_history_data(
     pool: &SqlitePool,
