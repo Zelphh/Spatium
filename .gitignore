@@ -197,3 +197,7 @@ Cargo.lock
 # Ignore all local history of files
 .history
 .ionide
+
+# Claude
+.claude
+CLAUDE.md

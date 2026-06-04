@@ -58,7 +58,7 @@ export function TimerControls({
           <Button
             variant="outline"
             onClick={onStop}
-            className="h-11 px-5 rounded-xl text-sm font-semibold border-primary/30 hover:bg-destructive/10 hover:text-destructive"
+            className="h-11 px-5 rounded-xl text-sm font-semibold border-primary/30 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
           >
             Encerrar
           </Button>

@@ -36,6 +36,7 @@ use commands::timer::change_timer_category;
 use commands::timer::change_timer_description;
 use commands::timer::change_timer_notes;
 use commands::dashboard::get_dashboard_data;
+use commands::dashboard::get_dashboard_chart_data;
 use commands::history::get_history_data;
 
 use state::AppState;
@@ -76,6 +77,7 @@ async fn main() {
             change_timer_description,
             change_timer_notes,
             get_dashboard_data,
+            get_dashboard_chart_data,
             get_history_data,
         ])
         .run(tauri::generate_context!())

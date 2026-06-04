@@ -20,6 +20,20 @@ pub struct DashboardDataResponse {
     pub recent_sessions: Vec<SessionListItem>,
 }
 
+#[derive(Serialize, FromRow)]
+pub struct SessionsToChartData {
+    pub id: i64,
+    pub duration_secs: i64,
+    pub created_at: String,
+}
+
+#[derive(FromRow)]
+pub struct SessionBucketData {
+    pub bucket: i64,
+    pub minutes: i64,
+    pub category: String,
+}
+
 #[derive(Serialize)]
 pub struct SerieData {
     pub name: String,

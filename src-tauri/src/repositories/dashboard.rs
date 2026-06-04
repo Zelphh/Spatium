@@ -1,6 +1,7 @@
+use std::collections::HashMap;
 use sqlx::SqlitePool;
 
-use crate::models::dashboard::{DashboardDataResponse, SerieData, SessionListItem};
+use crate::models::dashboard::{DashboardDataResponse, SerieData, SessionBucketData, SessionListItem, SessionsToChartData};
 
 pub async fn fetch_dashboard_data(
     pool: &SqlitePool,
@@ -91,10 +92,62 @@ pub async fn fetch_dashboard_data(
     })
 }
 
-// pub async fn fetch_series_data(
-//     pool: &SqlitePool,
-//     user_id: i64,
-//     periodicity: String,
-// ) -> Result<Vec<SerieData>, String> {
-    
-// }
+pub async fn fetch_series_data(
+    pool: &SqlitePool,
+    user_id: i64,
+    periodicity: &str,
+    n_buckets: usize,
+) -> Result<Vec<SerieData>, String> {
+    let (bucket_expr, filter) = match periodicity {
+        "day" => (
+            "CAST(strftime('%H', tse.created_at) AS INTEGER)",
+            "AND date(tse.created_at) = date('now')",
+        ),
+        "week" => (
+            "CAST(strftime('%w', tse.created_at) AS INTEGER)",
+            "AND date(tse.created_at) >= date('now', 'weekday 0', '-6 days') AND date(tse.created_at) < date(date('now', 'weekday 0', '-6 days'), '+7 days')",
+        ),
+        "month" => (
+            "CAST(strftime('%d', tse.created_at) AS INTEGER)",
+            "AND strftime('%Y-%m', tse.created_at) = strftime('%Y-%m', 'now')",
+        ),
+        _ => return Err("Periodicidade não suportada".to_string()),
+    };
+
+    let query = format!(
+        r#"
+        SELECT
+            {bucket_expr} AS bucket,
+            SUM(ts.duration_secs) / 60 AS minutes,
+            COALESCE(c.name, 'Sem categoria') AS category
+        FROM timer_session ts
+        JOIN timer_session_event tse ON ts.id = tse.session_id AND tse.event = 'finished'
+        LEFT JOIN category c ON ts.category_id = c.id
+        WHERE ts.user_id = ?1
+        {filter}
+        GROUP BY category, bucket
+        ORDER BY category, bucket
+        "#
+    );
+
+    let rows: Vec<SessionBucketData> = sqlx::query_as(&query)
+        .bind(user_id)
+        .fetch_all(pool)
+        .await
+        .map_err(|e| format!("Falha ao buscar dados do gráfico: {e}"))?;
+
+    let mut map: HashMap<String, Vec<i64>> = HashMap::new();
+    for row in rows {
+        let entry = map.entry(row.category).or_insert_with(|| vec![0; n_buckets]);
+        let idx = if periodicity == "month" {
+            (row.bucket - 1) as usize
+        } else {
+            row.bucket as usize
+        };
+        if idx < n_buckets {
+            entry[idx] = row.minutes;
+        }
+    }
+
+    Ok(map.into_iter().map(|(name, data)| SerieData { name, data }).collect())
+}

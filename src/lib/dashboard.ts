@@ -19,4 +19,19 @@ export function getDashboardData() {
   return invoke<DashboardDataResponse>("get_dashboard_data");
 }
 
+export interface SerieData {
+  name: string;
+  data: number[];
+}
+
+export interface ChartData {
+  label: string;
+  categories: string[];
+  series: SerieData[];
+}
+
+export function getDashboardChart(periodicity: string) {
+  return invoke<ChartData>("get_dashboard_chart_data", { periodicity });
+}
+
 
