@@ -34,14 +34,9 @@ pub async fn add_event_timer_service(
 ) -> Result<TimerEventResponse, String> {
     let result = insert_timer_event(pool, &payload).await?;
 
-    if payload.event.as_str() == "finished"  {
-        let total_secs = 
-            calc_session_duration_secs(pool, &payload.timer_id)
-            .await
-            .expect("Erro ao calculadar a duração da sessão do timer");
-        let _ = add_total_secs_to_session(pool, payload.timer_id, total_secs)
-            .await
-            .expect("Erro ao adicionar tempo do timer");
+    if payload.event.as_str() == "finished" {
+        let total_secs = calc_session_duration_secs(pool, &payload.timer_id).await?;
+        add_total_secs_to_session(pool, payload.timer_id, total_secs).await?;
     }
 
     Ok(TimerEventResponse {

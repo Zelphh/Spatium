@@ -1,5 +1,7 @@
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import { useMemo } from "react";
+import { useTheme } from "next-themes";
 import type { ChartData } from "@/lib/dashboard";
 
 interface DashboardAreaChartProps {
@@ -7,6 +9,13 @@ interface DashboardAreaChartProps {
 }
 
 export function DashboardAreaChart({ data }: DashboardAreaChartProps) {
+  const { theme } = useTheme();
+  const resolvedTheme = theme ?? "dark";
+  const isDark = resolvedTheme === "dark";
+
+  const axisLabelColor = isDark ? "#e5e7eb" : "#0f172a"; // light for dark theme, dark for light theme
+  const tooltipTextColor = isDark ? "#ffffff" : "#0f172a";
+
   const options: Highcharts.Options = {
     chart: {
       type: "area",
@@ -16,13 +25,13 @@ export function DashboardAreaChart({ data }: DashboardAreaChartProps) {
     title: { text: undefined },
     xAxis: {
       categories: data.categories,
-      labels: { style: { color: "var(--muted-foreground)" } },
+      labels: { style: { color: axisLabelColor } },
       lineColor: "var(--border)",
       tickColor: "var(--border)",
     },
     yAxis: {
-      title: { text: "Minutos", style: { color: "var(--muted-foreground)" } },
-      labels: { style: { color: "var(--muted-foreground)" } },
+      title: { text: "Minutos", style: { color: axisLabelColor } },
+      labels: { style: { color: axisLabelColor } },
       gridLineColor: "var(--border)",
       min: 0,
     },
@@ -30,7 +39,7 @@ export function DashboardAreaChart({ data }: DashboardAreaChartProps) {
       valueSuffix: " min",
       backgroundColor: "var(--card)",
       borderColor: "var(--border)",
-      style: { color: "var(--foreground)" },
+      style: { color: tooltipTextColor },
     },
     plotOptions: {
       area: {
@@ -49,7 +58,7 @@ export function DashboardAreaChart({ data }: DashboardAreaChartProps) {
     })),
     credits: { enabled: false },
     legend: {
-      itemStyle: { color: "var(--foreground)", fontWeight: "normal" },
+      itemStyle: { color: tooltipTextColor, fontWeight: "normal" },
     },
   };
 

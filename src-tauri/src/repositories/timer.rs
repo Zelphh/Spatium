@@ -24,7 +24,7 @@ pub async fn calc_session_duration_secs(pool: &SqlitePool, session_id: &i64) -> 
 
     for (event, created_at) in events {
         let timestamp = DateTime::parse_from_rfc3339(&created_at)
-            .map_err(|e| format!("Falha ao parsear created_at: {e}"))?
+            .map_err(|e| format!("Falha ao parsear created_at '{}': {e}", created_at))?
             .timestamp();
 
         match event.as_str() {

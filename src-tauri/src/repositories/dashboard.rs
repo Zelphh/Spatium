@@ -100,16 +100,16 @@ pub async fn fetch_series_data(
 ) -> Result<Vec<SerieData>, String> {
     let (bucket_expr, filter) = match periodicity {
         "day" => (
-            "CAST(strftime('%H', tse.created_at) AS INTEGER)",
-            "AND date(tse.created_at) = date('now')",
+            "CAST(strftime('%H', ts.created_at) AS INTEGER)",
+            "AND date(ts.created_at) = date('now')",
         ),
         "week" => (
-            "CAST(strftime('%w', tse.created_at) AS INTEGER)",
-            "AND date(tse.created_at) >= date('now', 'weekday 0', '-6 days') AND date(tse.created_at) < date(date('now', 'weekday 0', '-6 days'), '+7 days')",
+            "CAST(strftime('%w', ts.created_at) AS INTEGER)",
+            "AND date(ts.created_at) >= date('now', 'weekday 0', '-6 days') AND date(ts.created_at) < date(date('now', 'weekday 0', '-6 days'), '+7 days')",
         ),
         "month" => (
-            "CAST(strftime('%d', tse.created_at) AS INTEGER)",
-            "AND strftime('%Y-%m', tse.created_at) = strftime('%Y-%m', 'now')",
+            "CAST(strftime('%d', ts.created_at) AS INTEGER)",
+            "AND strftime('%Y-%m', ts.created_at) = strftime('%Y-%m', 'now')",
         ),
         _ => return Err("Periodicidade não suportada".to_string()),
     };
@@ -118,7 +118,7 @@ pub async fn fetch_series_data(
         r#"
         SELECT
             {bucket_expr} AS bucket,
-            SUM(ts.duration_secs) / 60 AS minutes,
+            CAST(SUM(ts.duration_secs) / 60.0 AS INTEGER) AS minutes,
             COALESCE(c.name, 'Sem categoria') AS category
         FROM timer_session ts
         JOIN timer_session_event tse ON ts.id = tse.session_id AND tse.event = 'finished'
