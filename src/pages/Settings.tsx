@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon, Palette } from "lucide-react";
+import { Sun, Moon, Palette, Database } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -15,6 +17,7 @@ import {
   accentMap,
   type AccentColor,
 } from "@/contexts/AccentContext";
+import { seedSampleData, clearSampleData } from "@/lib/dev";
 
 const accentOptions: { key: AccentColor; label: string }[] = [
   { key: "violet", label: "Violeta" },
@@ -28,6 +31,34 @@ const accentOptions: { key: AccentColor; label: string }[] = [
 const Settings = () => {
   const { theme, setTheme } = useTheme();
   const { accent, setAccent } = useAccent();
+  const [devLoading, setDevLoading] = useState(false);
+  const [devMessage, setDevMessage] = useState<string | null>(null);
+
+  async function handleSeed() {
+    setDevLoading(true);
+    setDevMessage(null);
+    try {
+      const msg = await seedSampleData();
+      setDevMessage(msg);
+    } catch (e) {
+      setDevMessage(String(e));
+    } finally {
+      setDevLoading(false);
+    }
+  }
+
+  async function handleClear() {
+    setDevLoading(true);
+    setDevMessage(null);
+    try {
+      const msg = await clearSampleData();
+      setDevMessage(msg);
+    } catch (e) {
+      setDevMessage(String(e));
+    } finally {
+      setDevLoading(false);
+    }
+  }
 
   return (
     <div className="p-8 max-w-5xl mx-auto w-full">
@@ -169,6 +200,40 @@ const Settings = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Dev Tools — visible only in development builds */}
+          {import.meta.env.DEV && (
+            <Card className="border-dashed border-amber-500/50">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <Database size={16} className="text-amber-500" />
+                  Ferramentas de Desenvolvimento
+                </CardTitle>
+              </CardHeader>
+              <Separator />
+              <CardContent className="p-6 space-y-4">
+                <Label className="text-sm text-muted-foreground block">
+                  Gere ~90 sessões de exemplo espalhadas pelos últimos 30 dias para testar o dashboard e o histórico.
+                </Label>
+                <div className="flex gap-3 flex-wrap">
+                  <Button onClick={handleSeed} disabled={devLoading} size="sm">
+                    {devLoading ? "Aguarde..." : "Gerar dados de exemplo"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleClear}
+                    disabled={devLoading}
+                    size="sm"
+                  >
+                    {devLoading ? "Aguarde..." : "Limpar todas as sessões"}
+                  </Button>
+                </div>
+                {devMessage && (
+                  <p className="text-xs text-muted-foreground">{devMessage}</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </motion.div>
       </div>
   );

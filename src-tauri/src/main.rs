@@ -9,6 +9,7 @@ mod repositories {
     pub mod timer;
     pub mod dashboard;
     pub mod history;
+    pub mod dev;
 }
 
 mod services {
@@ -21,6 +22,7 @@ mod commands {
     pub mod timer;
     pub mod dashboard;
     pub mod history;
+    pub mod dev;
     // pub mod category;
     // pub mod task;
 }
@@ -38,6 +40,7 @@ use commands::timer::change_timer_notes;
 use commands::dashboard::get_dashboard_data;
 use commands::dashboard::get_dashboard_chart_data;
 use commands::history::get_history_data;
+use commands::dev::{seed_sample_data, clear_sample_data};
 
 use state::AppState;
 use tauri::Manager;
@@ -79,6 +82,8 @@ async fn main() {
             get_dashboard_data,
             get_dashboard_chart_data,
             get_history_data,
+            seed_sample_data,
+            clear_sample_data,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao rodar app");
