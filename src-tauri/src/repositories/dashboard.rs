@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use sqlx::SqlitePool;
 
-use crate::models::dashboard::{DashboardDataResponse, SerieData, SessionBucketData, SessionListItem, SessionsToChartData};
+use crate::models::dashboard::{DashboardDataResponse, SerieData, SessionBucketData, SessionListItem};
 
 pub async fn fetch_dashboard_data(
     pool: &SqlitePool,
@@ -97,19 +97,20 @@ pub async fn fetch_series_data(
     user_id: i64,
     periodicity: &str,
     n_buckets: usize,
+    reference_date: &str,
 ) -> Result<Vec<SerieData>, String> {
     let (bucket_expr, filter) = match periodicity {
         "day" => (
             "CAST(strftime('%H', ts.created_at) AS INTEGER)",
-            "AND date(ts.created_at) = date('now')",
+            "AND date(ts.created_at) = ?2",
         ),
         "week" => (
             "CAST(strftime('%w', ts.created_at) AS INTEGER)",
-            "AND date(ts.created_at) >= date('now', 'weekday 0', '-6 days') AND date(ts.created_at) < date(date('now', 'weekday 0', '-6 days'), '+7 days')",
+            "AND date(ts.created_at) >= ?2 AND date(ts.created_at) < date(?2, '+7 days')",
         ),
         "month" => (
             "CAST(strftime('%d', ts.created_at) AS INTEGER)",
-            "AND strftime('%Y-%m', ts.created_at) = strftime('%Y-%m', 'now')",
+            "AND strftime('%Y-%m', ts.created_at) = ?2",
         ),
         _ => return Err("Periodicidade não suportada".to_string()),
     };
@@ -119,7 +120,8 @@ pub async fn fetch_series_data(
         SELECT
             {bucket_expr} AS bucket,
             CAST(SUM(ts.duration_secs) / 60.0 AS INTEGER) AS minutes,
-            COALESCE(c.name, 'Sem categoria') AS category
+            COALESCE(c.name, 'Sem categoria') AS category,
+            COALESCE(c.color, '#888888') AS color
         FROM timer_session ts
         JOIN timer_session_event tse ON ts.id = tse.session_id AND tse.event = 'finished'
         LEFT JOIN category c ON ts.category_id = c.id
@@ -132,22 +134,26 @@ pub async fn fetch_series_data(
 
     let rows: Vec<SessionBucketData> = sqlx::query_as(&query)
         .bind(user_id)
+        .bind(reference_date)
         .fetch_all(pool)
         .await
         .map_err(|e| format!("Falha ao buscar dados do gráfico: {e}"))?;
 
-    let mut map: HashMap<String, Vec<i64>> = HashMap::new();
+    let mut map: HashMap<String, (Vec<i64>, String)> = HashMap::new();
     for row in rows {
-        let entry = map.entry(row.category).or_insert_with(|| vec![0; n_buckets]);
+        let entry = map.entry(row.category).or_insert_with(|| (vec![0; n_buckets], row.color));
         let idx = if periodicity == "month" {
             (row.bucket - 1) as usize
         } else {
             row.bucket as usize
         };
         if idx < n_buckets {
-            entry[idx] = row.minutes;
+            entry.0[idx] = row.minutes;
         }
     }
 
-    Ok(map.into_iter().map(|(name, data)| SerieData { name, data }).collect())
+    Ok(map
+        .into_iter()
+        .map(|(name, (data, color))| SerieData { name, data, color })
+        .collect())
 }

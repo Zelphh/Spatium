@@ -1,12 +1,10 @@
 export type TimerMode = "standard" | "pomodoro" | "custom";
 
-export type CategoryType = "work" | "study" | "games" | "custom";
-
 export interface Category {
   id: number;
   name: string;
-  type: CategoryType;
   color: string;
+  icon?: string | null;
 }
 
 export interface TimerSession {
@@ -33,12 +31,6 @@ export interface TimerState {
   };
   customDuration: number; // in minutes
 }
-
-export const DEFAULT_CATEGORIES: Category[] = [
-  { id: 1, name: "Trabalho", type: "work", color: "category-work" },
-  { id: 2, name: "Estudo", type: "study", color: "category-study" },
-  { id: 3, name: "Jogos", type: "games", color: "category-games" },
-];
 
 export const DEFAULT_POMODORO_SETTINGS = {
   workDuration: 25,

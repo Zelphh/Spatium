@@ -23,8 +23,6 @@ mod commands {
     pub mod dashboard;
     pub mod history;
     pub mod dev;
-    // pub mod category;
-    // pub mod task;
 }
 mod db {
     pub mod pool;
@@ -37,6 +35,7 @@ use commands::timer::add_event_timer;
 use commands::timer::change_timer_category;
 use commands::timer::change_timer_description;
 use commands::timer::change_timer_notes;
+use commands::timer::get_categories;
 use commands::dashboard::get_dashboard_data;
 use commands::dashboard::get_dashboard_chart_data;
 use commands::history::get_history_data;
@@ -84,6 +83,7 @@ async fn main() {
             get_history_data,
             seed_sample_data,
             clear_sample_data,
+            get_categories,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao rodar app");

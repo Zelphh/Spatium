@@ -6,8 +6,8 @@ import { TimerCard } from "@/pages/Timer/TimerCard";
 import { CategorySelectorCard } from "@/pages/Timer/CategorySelectorCard";
 import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
 import { useTimer } from "@/hooks/useTimer";
-import { TimerMode, Category, DEFAULT_CATEGORIES } from "@/pages/type";
-import { changeCategory, changeDescription, changeNotes } from "@/lib/timer";
+import { TimerMode, Category } from "@/pages/type";
+import { changeCategory, changeDescription, changeNotes, getCategories } from "@/lib/timer";
 
 const Index = () => {
   const [mode, setMode] = useState<TimerMode>("standard");
@@ -19,6 +19,7 @@ const Index = () => {
   const [notes, setNotes] = useState("");
   const hasNotifiedCompletionRef = useRef(false);
   const cancelNotificationRef = useRef(false);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const timer = useTimer({
     mode,
@@ -26,11 +27,6 @@ const Index = () => {
     taskDescription,
     categoryId: selectedCategory?.id ? Number(selectedCategory.id) : null,
   });
-
-  const handleReset = useCallback(() => {
-    cancelNotificationRef.current = true;
-    timer.reset();
-  }, [timer]);
 
   useEffect(() => {
     if (mode !== "custom" || !timer.isCompleted) {
@@ -50,6 +46,32 @@ const Index = () => {
     }
   }, [mode, timer.isCompleted]);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categories = await getCategories();
+      setCategories(categories);
+    };
+    fetchCategories();
+  }, []);
+
+  const handleReset = useCallback(() => {
+    cancelNotificationRef.current = true;
+    if (timer.sessionId !== null && timer.sessionId > 0) {
+      changeNotes({
+        session_id: timer.sessionId,
+        notes,
+      });
+      changeDescription({
+        session_id: timer.sessionId,
+        description: taskDescription,
+      });
+    }
+    timer.reset();
+    setTaskDescription("");
+    setSelectedCategory(null);
+    setNotes("");
+  }, [timer]);
+
   const handleModeChange = (newMode: TimerMode) => {
     if (!timer.isRunning) {
       setMode(newMode);
@@ -65,26 +87,6 @@ const Index = () => {
       });
     }
     setSelectedCategory(category);
-  };
-
-  const handleDescriptionChange = (description: string) => {
-    if (timer.sessionId !== null && timer.sessionId > 0) {
-      changeDescription({
-        session_id: timer.sessionId,
-        description,
-      });
-    }
-    setTaskDescription(description);
-  };
-
-  const handleNotesChange = (value: string) => {
-    if (timer.sessionId !== null && timer.sessionId > 0) {
-      changeNotes({
-        session_id: timer.sessionId,
-        notes: value,
-      });
-    }
-    setNotes(value);
   };
 
   return (
@@ -127,13 +129,13 @@ const Index = () => {
         onStop={handleReset}
         canStart={true}
         taskDescription={taskDescription}
-        onTaskDescriptionChange={handleDescriptionChange}
+        onTaskDescriptionChange={setTaskDescription}
         selectedCategory={selectedCategory}
       />
 
       {/* Category Selection Card */}
       <CategorySelectorCard
-        categories={DEFAULT_CATEGORIES}
+        categories={categories}
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
         onAddCategory={() => {}}
@@ -143,7 +145,7 @@ const Index = () => {
       {/* Notes Card */}
       <TaskDescriptionCard
         notes={notes}
-        onNotesChange={handleNotesChange}
+        onNotesChange={setNotes}
         disabled={false}
       />
     </div>

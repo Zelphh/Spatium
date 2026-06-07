@@ -2,7 +2,7 @@ use sqlx::{sqlite::SqliteQueryResult, SqlitePool};
 use chrono::{DateTime};
 
 use crate::models::timer::{
-    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateTimerPayload
+    AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateTimerPayload
     // SessionListItem,
 };
 
@@ -170,5 +170,23 @@ pub async fn change_notes(
     .execute(pool)
     .await
     .map_err(|error| format!("Falha ao vincular notas à sessão do timer: {error}"))
+}
+
+pub async fn get_categories(pool: &SqlitePool) -> Result<Vec<Category>, String> {
+    sqlx::query_as(
+        r#"
+        SELECT 
+            id,
+            name,
+            color,
+            icon 
+        FROM category
+        WHERE user_id = ?1
+        "#,
+    )
+    .bind(1_i64)
+    .fetch_all(pool)
+    .await
+    .map_err(|error| format!("Falha ao buscar categorias do timer: {error}"))
 }
 

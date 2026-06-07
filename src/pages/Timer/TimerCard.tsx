@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { TimerMode, Category, CategoryType } from "@/pages/type";
+import { TimerMode, Category } from "@/pages/type";
 import { TimerDisplay } from "@/components/timer/TimerDisplay";
 import { TimerControls } from "@/components/timer/TimerControls";
-import { categoryIcons, categoryColorClasses } from "@/components/timer/CategorySelector";
+import { getCategoryIcon } from "@/components/timer/CategorySelector";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,11 +39,9 @@ export function TimerCard({
   onTaskDescriptionChange,
   selectedCategory,
 }: TimerCardProps) {
-  const CategoryIcon = selectedCategory
-    ? categoryIcons[selectedCategory.type as CategoryType]
-    : null;
-  const categoryColor = selectedCategory
-    ? categoryColorClasses[selectedCategory.type as CategoryType]
+  const CategoryIcon = selectedCategory ? getCategoryIcon(selectedCategory.icon) : null;
+  const categoryColorStyle = selectedCategory
+    ? { backgroundColor: selectedCategory.color }
     : null;
 
   return (
@@ -58,14 +56,15 @@ export function TimerCard({
           <div className="flex items-center gap-2 w-full">
             {selectedCategory && CategoryIcon && (
               <span
-                className={`flex items-center gap-1.5 shrink-0 text-xs font-medium px-2.5 py-1.5 rounded-full text-primary-foreground whitespace-nowrap ${categoryColor}`}
+                className="flex items-center gap-1.5 shrink-0 text-xs font-medium px-2.5 py-1.5 rounded-full text-primary-foreground whitespace-nowrap"
+                style={categoryColorStyle ?? undefined}
               >
                 <CategoryIcon size={12} />
                 {selectedCategory.name}
               </span>
             )}
             <Input
-              placeholder="No que você está trabalhando?"
+              placeholder="Sobre o que é essa sessão?"
               value={taskDescription}
               onChange={(e) => onTaskDescriptionChange(e.target.value)}
               className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:text-muted-foreground/60 px-0 h-8"

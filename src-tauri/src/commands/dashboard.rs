@@ -13,6 +13,7 @@ pub async fn get_dashboard_data(state: State<'_, AppState>) -> Result<DashboardD
 pub async fn get_dashboard_chart_data(
     state: State<'_, AppState>,
     periodicity: String,
+    date: String,
 ) -> Result<ChartData, String> {
-    get_dashboard_chart(&state.db, 1, periodicity).await
+    get_dashboard_chart(&state.db, 1, periodicity, date).await
 }

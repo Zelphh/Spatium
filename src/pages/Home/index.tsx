@@ -2,19 +2,18 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, TrendingUp, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { QuickStartCard } from "./QuickStartCard";
 import { RecentHistoryCard } from "./RecentHistoryCard";
 import { getDashboardData, getDashboardChart, type ChartData, type DashboardDataResponse } from "@/lib/dashboard";
 import { DashboardAreaChart } from "@/components/charts/DashboardAreaChart";
-
-type Period = "day" | "week" | "month";
+import { ChartPeriodPicker, getDefaultDate, type Period } from "./ChartPeriodPicker";
 
 const HomePage = () => {
   const [dashboardData, setDashboardData] = useState<DashboardDataResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [chartPeriod, setChartPeriod] = useState<Period>("week");
+  const [chartDate, setChartDate] = useState<string>(() => getDefaultDate("week"));
   const [chartData, setChartData] = useState<ChartData | null>(null);
 
   useEffect(() => {
@@ -48,9 +47,10 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
+    if (!chartDate) return;
     let mounted = true;
 
-    void getDashboardChart(chartPeriod)
+    void getDashboardChart(chartPeriod, chartDate)
       .then((response) => {
         if (!mounted) return;
         setChartData(response);
@@ -63,7 +63,12 @@ const HomePage = () => {
     return () => {
       mounted = false;
     };
-  }, [chartPeriod]);
+  }, [chartPeriod, chartDate]);
+
+  const handlePeriodChange = (p: Period, d: string) => {
+    setChartPeriod(p);
+    setChartDate(d);
+  };
 
   const todayStats = {
     hours: dashboardData?.today_hours ?? 0,
@@ -144,7 +149,7 @@ const HomePage = () => {
         </motion.div>
 
         {/* Area Chart */}
-        {chartData && chartData.series.length > 0 && (
+        {chartData && chartData.series.length > 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -157,23 +162,45 @@ const HomePage = () => {
                   <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                     Minutos de foco
                   </CardTitle>
-                  <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
-                    {(["day", "week", "month"] as Period[]).map((p) => (
-                      <Button
-                        key={p}
-                        size="sm"
-                        variant={chartPeriod === p ? "default" : "ghost"}
-                        className="h-7 px-3 text-xs rounded-md"
-                        onClick={() => setChartPeriod(p)}
-                      >
-                        {p === "day" ? "Dia" : p === "week" ? "Semana" : "Mês"}
-                      </Button>
-                    ))}
-                  </div>
+                  <ChartPeriodPicker
+                    period={chartPeriod}
+                    date={chartDate}
+                    onChange={handlePeriodChange}
+                  />
                 </div>
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 <DashboardAreaChart data={chartData} />
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="mb-8"
+          >
+            <Card className="border-border/60">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    Minutos de foco
+                  </CardTitle>
+                  <ChartPeriodPicker
+                    period={chartPeriod}
+                    date={chartDate}
+                    onChange={handlePeriodChange}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <div className="flex flex-col items-center justify-center py-10 gap-3">
+                  <Clock size={32} className="text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    Nenhum dado disponível para este período
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </motion.div>

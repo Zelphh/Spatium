@@ -24,7 +24,7 @@ export function DashboardAreaChart({ data }: DashboardAreaChartProps) {
     },
     title: { text: undefined },
     xAxis: {
-      categories: data.categories,
+      categories: data?.categories,
       labels: { style: { color: axisLabelColor } },
       lineColor: "var(--border)",
       tickColor: "var(--border)",
@@ -44,17 +44,15 @@ export function DashboardAreaChart({ data }: DashboardAreaChartProps) {
     plotOptions: {
       area: {
         marker: {
-          enabled: false,
-          states: { hover: { enabled: true, radius: 4 } },
-        },
-        fillOpacity: 0.25,
-        stacking: "normal",
-      },
+          enabled: false
+        }
+      }
     },
-    series: data.series.map((s) => ({
-      name: s.name,
+    series: data?.series.map((s) => ({
+      name: s?.name,
       type: "area" as const,
-      data: s.data,
+      data: s?.data,
+      color: s?.color,
     })),
     credits: { enabled: false },
     legend: {

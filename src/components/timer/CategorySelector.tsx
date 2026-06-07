@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Category, CategoryType } from "@/pages/type";
-import { Briefcase, BookOpen, Gamepad2, Plus } from "lucide-react";
+import { Category } from "@/pages/type";
+import { Briefcase, BookOpen, Gamepad2, Plus, Tag } from "lucide-react";
 
 interface CategorySelectorProps {
   categories: Category[];
@@ -10,18 +10,18 @@ interface CategorySelectorProps {
   disabled?: boolean;
 }
 
-export const categoryIcons: Record<CategoryType, typeof Briefcase> = {
-  work: Briefcase,
-  study: BookOpen,
-  games: Gamepad2,
-  custom: Plus,
+const categoryIcons: Record<string, typeof Briefcase> = {
+  briefcase: Briefcase,
+  book: BookOpen,
+  gamepad: Gamepad2,
 };
 
-export const categoryColorClasses: Record<CategoryType, string> = {
-  work: "bg-category-work",
-  study: "bg-category-study",
-  games: "bg-category-games",
-  custom: "bg-category-custom",
+export function getCategoryIcon(icon?: string | null) {
+  if (!icon) {
+    return Tag;
+  }
+
+  return categoryIcons[icon] ?? Tag;
 };
 
 export function CategorySelector({
@@ -34,9 +34,9 @@ export function CategorySelector({
   return (
     <div className="flex flex-wrap items-center gap-3 justify-center">
       {categories.map((category) => {
-        const Icon = categoryIcons[category.type];
+        const Icon = getCategoryIcon(category.icon);
         const isSelected = selectedCategory?.id === category.id;
-        const colorClass = categoryColorClasses[category.type];
+        const colorStyle = { backgroundColor: category.color };
 
         return (
           <motion.button
@@ -59,7 +59,8 @@ export function CategorySelector({
             {isSelected && (
               <motion.div
                 layoutId="category-bg"
-                className={`absolute inset-0 ${colorClass} rounded-lg opacity-15`}
+                className="absolute inset-0 rounded-lg opacity-15"
+                style={colorStyle}
                 initial={false}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
@@ -71,10 +72,8 @@ export function CategorySelector({
               `}
             >
               <span
-                className={`
-                  w-6 h-6 rounded-full flex items-center justify-center
-                  ${colorClass} text-primary-foreground
-                `}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-primary-foreground"
+                style={colorStyle}
               >
                 <Icon size={14} />
               </span>

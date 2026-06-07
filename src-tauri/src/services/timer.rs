@@ -1,10 +1,10 @@
 use sqlx::SqlitePool;
 
 use crate::models::timer::{
-    AddTimerEventPayload, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateTimerResponse, TimerEventResponse
+    AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, insert_timer_event, insert_timer_session
+    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, get_categories, insert_timer_event, insert_timer_session
 };
 
 pub async fn create_timer_service(
@@ -75,4 +75,8 @@ pub async fn change_timer_notes_service(
         .expect("Erro ao alterar as notas da sessão do timer {error}");
 
     Ok(())
+}
+
+pub async fn get_categories_service(pool: &SqlitePool) -> Result<Vec<Category>, String> {
+    get_categories(pool).await
 }

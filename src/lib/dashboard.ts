@@ -22,6 +22,7 @@ export function getDashboardData() {
 export interface SerieData {
   name: string;
   data: number[];
+  color: string;
 }
 
 export interface ChartData {
@@ -30,8 +31,8 @@ export interface ChartData {
   series: SerieData[];
 }
 
-export function getDashboardChart(periodicity: string) {
-  return invoke<ChartData>("get_dashboard_chart_data", { periodicity });
+export function getDashboardChart(periodicity: string, date: string) {
+  return invoke<ChartData>("get_dashboard_chart_data", { periodicity, date });
 }
 
 

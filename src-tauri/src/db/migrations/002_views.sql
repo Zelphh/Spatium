@@ -2,7 +2,7 @@
 --  Spatium — Useful Views
 -- ============================================================
 
--- Daily summary per user (current day only)
+-- Daily summary per user (all days)
 CREATE VIEW IF NOT EXISTS vw_daily_summary AS
 SELECT
     user_id,
@@ -11,7 +11,6 @@ SELECT
     SUM(duration_secs)                     AS total_secs,
     ROUND(SUM(duration_secs) / 3600.0, 2) AS total_hours
 FROM timer_session
-WHERE date(created_at) = date('now')
 GROUP BY user_id, date(created_at);
 
 -- Weekly summary per user (current week only, starts on Monday)

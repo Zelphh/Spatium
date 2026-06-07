@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::prelude::FromRow;
+// use sqlx::FromRow;
 
 #[derive(Deserialize)]
 pub struct CreateTimerPayload {
@@ -63,4 +64,12 @@ pub struct ChangeDescriptionPayload {
 pub struct ChangeNotesPayload {
     pub session_id: i64,
     pub notes: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, FromRow)]
+pub struct Category {
+    pub id: i64,
+    pub name: String,
+    pub color: String,
+    pub icon: String,
 }
