@@ -59,7 +59,7 @@ export function CategorySelector({
             {isSelected && (
               <motion.div
                 layoutId="category-bg"
-                className="absolute inset-0 rounded-lg opacity-15"
+                className="absolute inset-0 rounded-lg"
                 style={colorStyle}
                 initial={false}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}

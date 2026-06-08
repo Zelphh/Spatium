@@ -10,26 +10,19 @@ import { TimerMode, Category } from "@/pages/type";
 import { changeCategory, changeDescription, changeNotes, getCategories } from "@/lib/timer";
 
 const Index = () => {
-  const [mode, setMode] = useState<TimerMode>("standard");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
   );
-  const [customDuration, setCustomDuration] = useState(25);
   const [taskDescription, setTaskDescription] = useState("");
   const [notes, setNotes] = useState("");
   const hasNotifiedCompletionRef = useRef(false);
   const cancelNotificationRef = useRef(false);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const timer = useTimer({
-    mode,
-    customDuration,
-    taskDescription,
-    categoryId: selectedCategory?.id ? Number(selectedCategory.id) : null,
-  });
+  const timer = useTimer();
 
   useEffect(() => {
-    if (mode !== "custom" || !timer.isCompleted) {
+    if (timer.mode !== "custom" || !timer.isCompleted) {
       hasNotifiedCompletionRef.current = false;
       cancelNotificationRef.current = false;
       return;
@@ -44,12 +37,12 @@ const Index = () => {
       });
       hasNotifiedCompletionRef.current = true;
     }
-  }, [mode, timer.isCompleted]);
+  }, [timer.mode, timer.isCompleted]);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const categories = await getCategories();
-      setCategories(categories);
+      const cats = await getCategories();
+      setCategories(cats);
     };
     fetchCategories();
   }, []);
@@ -70,11 +63,11 @@ const Index = () => {
     setTaskDescription("");
     setSelectedCategory(null);
     setNotes("");
-  }, [timer]);
+  }, [timer, notes, taskDescription]);
 
   const handleModeChange = (newMode: TimerMode) => {
     if (!timer.isRunning) {
-      setMode(newMode);
+      timer.setMode(newMode);
       timer.reset({ recordEvent: false });
     }
   };
@@ -110,7 +103,7 @@ const Index = () => {
         transition={{ delay: 0.1 }}
       >
         <ModeSelector
-          selectedMode={mode}
+          selectedMode={timer.mode}
           onModeChange={handleModeChange}
           disabled={timer.isRunning}
         />
@@ -118,13 +111,13 @@ const Index = () => {
 
       {/* Timer Card with description input */}
       <TimerCard
-        mode={mode}
-        customDuration={customDuration}
-        onCustomDurationChange={setCustomDuration}
+        mode={timer.mode}
+        customDuration={timer.customDuration}
+        onCustomDurationChange={timer.setCustomDuration}
         isRunning={timer.isRunning}
         formattedTime={timer.formattedTime}
         progress={timer.progress}
-        onToggle={timer.toggle}
+        onToggle={() => timer.toggle(taskDescription, selectedCategory?.id ? Number(selectedCategory.id) : null)}
         onReset={handleReset}
         onStop={handleReset}
         canStart={true}
