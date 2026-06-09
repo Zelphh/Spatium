@@ -6,6 +6,28 @@ use crate::models::timer::{
     // SessionListItem,
 };
 
+pub async fn insert_category(
+    pool: &SqlitePool,
+    name: String,
+    color: String,
+    icon: Option<String>,
+) -> Result<i64, String> {
+    let result = sqlx::query(
+        r#"
+        INSERT INTO category (user_id, name, color, icon)
+        VALUES (1, ?1, ?2, ?3)
+        "#,
+    )
+    .bind(name)
+    .bind(color)
+    .bind(icon)
+    .execute(pool)
+    .await
+    .map_err(|error| format!("Falha ao criar categoria: {error}"))?;
+
+    Ok(result.last_insert_rowid())
+}
+
 pub async fn calc_session_duration_secs(pool: &SqlitePool, session_id: &i64) -> Result<i64, String> {
     let events: Vec<(String, String)> = sqlx::query_as(
         r#"

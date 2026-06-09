@@ -1,6 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Category, TimerMode } from "@/pages/type";
-import { FunctionSquare } from "lucide-react";
 
 export type TimerEvent = "started" | "finished" | "paused" | "unpaused";
 
@@ -40,6 +39,12 @@ export interface ChangeNotesPayload {
   notes: string;
 }
 
+export interface CreateCategoryPayload {
+  name: string;
+  color: string;
+  icon?: string;
+}
+
 export function createTimer(payload: CreateTimerPayload) {
   return invoke<CreateTimerResponse>("create_timer", { payload });
 }
@@ -62,6 +67,10 @@ export function changeNotes(payload: ChangeNotesPayload) {
 
 export function getCategories() {
   return invoke<Category[]>("get_categories");
+}
+
+export function createCategory(payload: CreateCategoryPayload) {
+  return invoke<Category>("create_category", { payload });
 }
 
 export const formatDuration = (totalSeconds: number) => {

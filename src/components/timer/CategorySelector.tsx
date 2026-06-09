@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Category } from "@/pages/type";
-import { Briefcase, BookOpen, Gamepad2, Plus, Tag } from "lucide-react";
+import { Briefcase, BookOpen, Gamepad2, Plus, Tag, Code2, Music, Heart, Star, Zap, Coffee } from "lucide-react";
 
 interface CategorySelectorProps {
   categories: Category[];
@@ -10,10 +10,16 @@ interface CategorySelectorProps {
   disabled?: boolean;
 }
 
-const categoryIcons: Record<string, typeof Briefcase> = {
+export const categoryIcons: Record<string, typeof Briefcase> = {
   briefcase: Briefcase,
   book: BookOpen,
   gamepad: Gamepad2,
+  code: Code2,
+  music: Music,
+  heart: Heart,
+  star: Star,
+  zap: Zap,
+  coffee: Coffee,
 };
 
 export function getCategoryIcon(icon?: string | null) {

@@ -5,6 +5,7 @@ import { ModeSelector } from "@/components/timer/ModeSelector";
 import { TimerCard } from "@/pages/Timer/TimerCard";
 import { CategorySelectorCard } from "@/pages/Timer/CategorySelectorCard";
 import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
+import { CreateCategoryDialog } from "@/components/timer/CreateCategoryDialog";
 import { useTimer } from "@/hooks/useTimer";
 import { TimerMode, Category } from "@/pages/type";
 import { changeCategory, changeDescription, changeNotes, getCategories } from "@/lib/timer";
@@ -18,6 +19,7 @@ const Index = () => {
   const hasNotifiedCompletionRef = useRef(false);
   const cancelNotificationRef = useRef(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [addCategoryOpen, setAddCategoryOpen] = useState(false);
 
   const timer = useTimer();
 
@@ -131,8 +133,17 @@ const Index = () => {
         categories={categories}
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
-        onAddCategory={() => {}}
+        onAddCategory={() => setAddCategoryOpen(true)}
         disabled={false}
+      />
+
+      <CreateCategoryDialog
+        open={addCategoryOpen}
+        onOpenChange={setAddCategoryOpen}
+        onCreated={(category) => {
+          setCategories((prev) => [...prev, category]);
+          setSelectedCategory(category);
+        }}
       />
 
       {/* Notes Card */}
