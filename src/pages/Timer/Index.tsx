@@ -20,6 +20,7 @@ const Index = () => {
   const cancelNotificationRef = useRef(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [addCategoryOpen, setAddCategoryOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   const timer = useTimer();
 
@@ -134,15 +135,32 @@ const Index = () => {
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
         onAddCategory={() => setAddCategoryOpen(true)}
+        onEditCategory={(category) => setEditingCategory(category)}
         disabled={false}
       />
 
       <CreateCategoryDialog
-        open={addCategoryOpen}
-        onOpenChange={setAddCategoryOpen}
+        open={addCategoryOpen || editingCategory !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setAddCategoryOpen(false);
+            setEditingCategory(null);
+          } else {
+            setAddCategoryOpen(true);
+          }
+        }}
+        editCategory={editingCategory}
         onCreated={(category) => {
           setCategories((prev) => [...prev, category]);
           setSelectedCategory(category);
+        }}
+        onUpdated={(updated) => {
+          setCategories((prev) =>
+            prev.map((c) => (c.id === updated.id ? updated : c))
+          );
+          if (selectedCategory?.id === updated.id) {
+            setSelectedCategory(updated);
+          }
         }}
       />
 

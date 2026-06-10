@@ -80,3 +80,11 @@ pub struct CreateCategoryPayload {
     pub color: String,
     pub icon: Option<String>,
 }
+
+#[derive(Deserialize, Debug)]
+pub struct UpdateCategoryPayload {
+    pub id: i64,
+    pub name: String,
+    pub color: String,
+    pub icon: Option<String>,
+}

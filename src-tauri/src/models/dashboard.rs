@@ -5,6 +5,7 @@ use sqlx::FromRow;
 pub struct SessionListItem {
     pub id: i64,
     pub category: String,
+    pub category_color: String,
     pub mode: String,
     pub description: String,
     pub duration_secs: i64,

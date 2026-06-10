@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Category } from "@/pages/type";
-import { createCategory } from "@/lib/timer";
+import { createCategory, updateCategory } from "@/lib/timer";
 import { notify } from "@/components/notificationManager";
 import { categoryIcons } from "@/components/timer/CategorySelector";
 import {
@@ -18,6 +18,8 @@ interface CreateCategoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: (category: Category) => void;
+  onUpdated?: (category: Category) => void;
+  editCategory?: Category | null;
 }
 
 const DEFAULT_COLOR = "#8B5CF6";
@@ -27,11 +29,29 @@ export function CreateCategoryDialog({
   open,
   onOpenChange,
   onCreated,
+  onUpdated,
+  editCategory,
 }: CreateCategoryDialogProps) {
+  const isEditing = !!editCategory;
+
   const [name, setName] = useState("");
   const [color, setColor] = useState(DEFAULT_COLOR);
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_ICON);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      if (editCategory) {
+        setName(editCategory.name);
+        setColor(editCategory.color);
+        setSelectedIcon(editCategory.icon ?? DEFAULT_ICON);
+      } else {
+        setName("");
+        setColor(DEFAULT_COLOR);
+        setSelectedIcon(DEFAULT_ICON);
+      }
+    }
+  }, [open, editCategory]);
 
   const handleClose = (isOpen: boolean) => {
     if (!isOpen) {
@@ -48,17 +68,28 @@ export function CreateCategoryDialog({
 
     setLoading(true);
     try {
-      const category = await createCategory({
-        name: trimmed,
-        color,
-        icon: selectedIcon,
-      });
-      onCreated(category);
-      notify({ title: "Categoria criada", message: `"${trimmed}" foi adicionada com sucesso.` });
+      if (isEditing && editCategory) {
+        const category = await updateCategory({
+          id: Number(editCategory.id),
+          name: trimmed,
+          color,
+          icon: selectedIcon,
+        });
+        onUpdated?.(category);
+        notify({ title: "Categoria atualizada", message: `"${trimmed}" foi atualizada com sucesso.` });
+      } else {
+        const category = await createCategory({
+          name: trimmed,
+          color,
+          icon: selectedIcon,
+        });
+        onCreated(category);
+        notify({ title: "Categoria criada", message: `"${trimmed}" foi adicionada com sucesso.` });
+      }
       handleClose(false);
     } catch (err) {
       notify({
-        title: "Erro ao criar categoria",
+        title: isEditing ? "Erro ao atualizar categoria" : "Erro ao criar categoria",
         message: String(err),
         borderColor: "hsl(var(--destructive))",
       });
@@ -71,7 +102,7 @@ export function CreateCategoryDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Nova categoria</DialogTitle>
+          <DialogTitle>{isEditing ? "Editar categoria" : "Nova categoria"}</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-5 py-2">
@@ -137,7 +168,10 @@ export function CreateCategoryDialog({
             Cancelar
           </Button>
           <Button onClick={handleSubmit} disabled={!name.trim() || loading}>
-            {loading ? "Criando..." : "Criar"}
+            {loading
+              ? isEditing ? "Salvando..." : "Criando..."
+              : isEditing ? "Salvar" : "Criar"
+            }
           </Button>
         </DialogFooter>
       </DialogContent>

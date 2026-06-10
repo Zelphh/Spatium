@@ -194,6 +194,30 @@ pub async fn change_notes(
     .map_err(|error| format!("Falha ao vincular notas à sessão do timer: {error}"))
 }
 
+pub async fn update_category(
+    pool: &SqlitePool,
+    id: i64,
+    name: String,
+    color: String,
+    icon: Option<String>,
+) -> Result<(), String> {
+    sqlx::query(
+        r#"
+        UPDATE category
+        SET name = ?1, color = ?2, icon = ?3
+        WHERE id = ?4 AND user_id = 1
+        "#,
+    )
+    .bind(name)
+    .bind(color)
+    .bind(icon)
+    .bind(id)
+    .execute(pool)
+    .await
+    .map_err(|error| format!("Falha ao atualizar categoria: {error}"))?;
+    Ok(())
+}
+
 pub async fn get_categories(pool: &SqlitePool) -> Result<Vec<Category>, String> {
     sqlx::query_as(
         r#"

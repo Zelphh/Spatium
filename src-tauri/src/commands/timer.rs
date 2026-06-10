@@ -1,5 +1,5 @@
 use crate::models::timer::{
-    AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, CreateTimerPayload, CreateTimerResponse, TimerEventResponse
+    AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, UpdateCategoryPayload, CreateTimerPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::services::timer::{
     add_event_timer_service,
@@ -7,6 +7,7 @@ use crate::services::timer::{
     change_timer_description_service,
     change_timer_notes_service,
     create_category_service,
+    update_category_service,
     create_timer_service, get_categories_service,
 };
 use crate::state::AppState;
@@ -65,5 +66,13 @@ pub async fn create_category(
     payload: CreateCategoryPayload,
 ) -> Result<Category, String> {
     create_category_service(&state.db, payload).await
+}
+
+#[tauri::command]
+pub async fn update_category(
+    state: State<'_, AppState>,
+    payload: UpdateCategoryPayload,
+) -> Result<Category, String> {
+    update_category_service(&state.db, payload).await
 }
 

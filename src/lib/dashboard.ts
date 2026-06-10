@@ -3,6 +3,9 @@ import { invoke } from "@tauri-apps/api/core";
 export interface SessionListItem {
   id: number;
   category: string;
+  category_color: string;
+  mode: string;
+  description: string;
   duration_secs: number;
   created_at: string;
 }

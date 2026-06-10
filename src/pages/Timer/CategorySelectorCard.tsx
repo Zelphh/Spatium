@@ -8,6 +8,7 @@ interface CategorySelectorCardProps {
   selectedCategory: Category | null;
   onCategoryChange: (category: Category) => void;
   onAddCategory?: () => void;
+  onEditCategory?: (category: Category) => void;
   disabled?: boolean;
 }
 
@@ -16,6 +17,7 @@ export function CategorySelectorCard({
   selectedCategory,
   onCategoryChange,
   onAddCategory,
+  onEditCategory,
   disabled,
 }: CategorySelectorCardProps) {
   return (
@@ -31,6 +33,7 @@ export function CategorySelectorCard({
             selectedCategory={selectedCategory}
             onCategoryChange={onCategoryChange}
             onAddCategory={onAddCategory}
+            onEditCategory={onEditCategory}
             disabled={disabled}
           />
         </CardContent>

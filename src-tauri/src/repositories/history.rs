@@ -23,7 +23,8 @@ pub async fn fetch_history_data(
         r#"
         SELECT
             id,
-            category_name AS category,
+            category_name  AS category,
+            category_color,
             mode,
             description,
             duration_secs,

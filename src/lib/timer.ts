@@ -45,6 +45,13 @@ export interface CreateCategoryPayload {
   icon?: string;
 }
 
+export interface UpdateCategoryPayload {
+  id: number;
+  name: string;
+  color: string;
+  icon?: string;
+}
+
 export function createTimer(payload: CreateTimerPayload) {
   return invoke<CreateTimerResponse>("create_timer", { payload });
 }
@@ -71,6 +78,10 @@ export function getCategories() {
 
 export function createCategory(payload: CreateCategoryPayload) {
   return invoke<Category>("create_category", { payload });
+}
+
+export function updateCategory(payload: UpdateCategoryPayload) {
+  return invoke<Category>("update_category", { payload });
 }
 
 export const formatDuration = (totalSeconds: number) => {

@@ -1,10 +1,10 @@
 use sqlx::SqlitePool;
 
 use crate::models::timer::{
-    AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, CreateTimerResponse, TimerEventResponse
+    AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, UpdateCategoryPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, get_categories, insert_category, insert_timer_event, insert_timer_session
+    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, get_categories, insert_category, update_category, insert_timer_event, insert_timer_session
 };
 
 pub async fn create_timer_service(
@@ -89,6 +89,20 @@ pub async fn create_category_service(
 
     Ok(Category {
         id,
+        name: payload.name,
+        color: payload.color,
+        icon: payload.icon,
+    })
+}
+
+pub async fn update_category_service(
+    pool: &SqlitePool,
+    payload: UpdateCategoryPayload,
+) -> Result<Category, String> {
+    update_category(pool, payload.id, payload.name.clone(), payload.color.clone(), payload.icon.clone()).await?;
+
+    Ok(Category {
+        id: payload.id,
         name: payload.name,
         color: payload.color,
         icon: payload.icon,

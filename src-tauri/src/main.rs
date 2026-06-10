@@ -37,6 +37,7 @@ use commands::timer::change_timer_description;
 use commands::timer::change_timer_notes;
 use commands::timer::get_categories;
 use commands::timer::create_category;
+use commands::timer::update_category;
 use commands::dashboard::get_dashboard_data;
 use commands::dashboard::get_dashboard_chart_data;
 use commands::history::get_history_data;
@@ -86,6 +87,7 @@ async fn main() {
             clear_sample_data,
             get_categories,
             create_category,
+            update_category,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao rodar app");
