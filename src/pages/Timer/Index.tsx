@@ -6,6 +6,7 @@ import { TimerCard } from "@/pages/Timer/TimerCard";
 import { CategorySelectorCard } from "@/pages/Timer/CategorySelectorCard";
 import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
 import { CreateCategoryDialog } from "@/components/timer/CreateCategoryDialog";
+import { DeleteCategoryDialog } from "@/components/timer/DeleteCategoryDialog";
 import { useTimer } from "@/hooks/useTimer";
 import { TimerMode, Category } from "@/pages/type";
 import { changeCategory, changeDescription, changeNotes, getCategories } from "@/lib/timer";
@@ -21,6 +22,7 @@ const Index = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [addCategoryOpen, setAddCategoryOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
 
   const timer = useTimer();
 
@@ -136,6 +138,7 @@ const Index = () => {
         onCategoryChange={handleCategoryChange}
         onAddCategory={() => setAddCategoryOpen(true)}
         onEditCategory={(category) => setEditingCategory(category)}
+        onDeleteCategory={(category) => setDeletingCategory(category)}
         disabled={false}
       />
 
@@ -160,6 +163,19 @@ const Index = () => {
           );
           if (selectedCategory?.id === updated.id) {
             setSelectedCategory(updated);
+          }
+        }}
+      />
+
+      <DeleteCategoryDialog
+        category={deletingCategory}
+        onOpenChange={(open) => {
+          if (!open) setDeletingCategory(null);
+        }}
+        onDeleted={(deleted) => {
+          setCategories((prev) => prev.filter((c) => c.id !== deleted.id));
+          if (selectedCategory?.id === deleted.id) {
+            setSelectedCategory(null);
           }
         }}
       />

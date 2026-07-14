@@ -88,3 +88,8 @@ pub struct UpdateCategoryPayload {
     pub color: String,
     pub icon: Option<String>,
 }
+
+#[derive(Deserialize, Debug)]
+pub struct DeleteCategoryPayload {
+    pub id: i64,
+}

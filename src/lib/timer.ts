@@ -52,6 +52,10 @@ export interface UpdateCategoryPayload {
   icon?: string;
 }
 
+export interface DeleteCategoryPayload {
+  id: number;
+}
+
 export function createTimer(payload: CreateTimerPayload) {
   return invoke<CreateTimerResponse>("create_timer", { payload });
 }
@@ -82,6 +86,10 @@ export function createCategory(payload: CreateCategoryPayload) {
 
 export function updateCategory(payload: UpdateCategoryPayload) {
   return invoke<Category>("update_category", { payload });
+}
+
+export function deleteCategory(payload: DeleteCategoryPayload) {
+  return invoke<void>("delete_category", { payload });
 }
 
 export const formatDuration = (totalSeconds: number) => {

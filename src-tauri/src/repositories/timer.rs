@@ -218,6 +218,20 @@ pub async fn update_category(
     Ok(())
 }
 
+pub async fn delete_category(pool: &SqlitePool, id: i64) -> Result<(), String> {
+    sqlx::query(
+        r#"
+        DELETE FROM category
+        WHERE id = ?1 AND user_id = 1
+        "#,
+    )
+    .bind(id)
+    .execute(pool)
+    .await
+    .map_err(|error| format!("Falha ao excluir categoria: {error}"))?;
+    Ok(())
+}
+
 pub async fn get_categories(pool: &SqlitePool) -> Result<Vec<Category>, String> {
     sqlx::query_as(
         r#"

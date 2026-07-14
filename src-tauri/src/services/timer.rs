@@ -4,7 +4,7 @@ use crate::models::timer::{
     AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, UpdateCategoryPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, get_categories, insert_category, update_category, insert_timer_event, insert_timer_session
+    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, delete_category, get_categories, insert_category, update_category, insert_timer_event, insert_timer_session
 };
 
 pub async fn create_timer_service(
@@ -107,4 +107,8 @@ pub async fn update_category_service(
         color: payload.color,
         icon: payload.icon,
     })
+}
+
+pub async fn delete_category_service(pool: &SqlitePool, id: i64) -> Result<(), String> {
+    delete_category(pool, id).await
 }

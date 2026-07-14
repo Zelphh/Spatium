@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Category } from "@/pages/type";
-import { Briefcase, BookOpen, Gamepad2, Plus, Tag, Code2, Music, Heart, Star, Zap, Coffee, Pencil } from "lucide-react";
+import { Briefcase, BookOpen, Gamepad2, Plus, Tag, Code2, Music, Heart, Star, Zap, Coffee, Pencil, Trash2 } from "lucide-react";
 
 interface CategorySelectorProps {
   categories: Category[];
@@ -9,6 +9,7 @@ interface CategorySelectorProps {
   onCategoryChange: (category: Category) => void;
   onAddCategory?: () => void;
   onEditCategory?: (category: Category) => void;
+  onDeleteCategory?: (category: Category) => void;
   disabled?: boolean;
 }
 
@@ -38,6 +39,7 @@ export function CategorySelector({
   onCategoryChange,
   onAddCategory,
   onEditCategory,
+  onDeleteCategory,
   disabled,
 }: CategorySelectorProps) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -98,22 +100,42 @@ export function CategorySelector({
               </span>
             </motion.button>
 
-            {/* Edit button on hover */}
-            {onEditCategory && isHovered && !disabled && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.1 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditCategory(category);
-                }}
-                className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-background border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-muted-foreground/60 transition-colors z-20"
-                title="Editar categoria"
-              >
-                <Pencil size={10} />
-              </motion.button>
+            {/* Edit/Delete buttons on hover */}
+            {isHovered && !disabled && (onEditCategory || onDeleteCategory) && (
+              <div className="absolute -top-2 -right-2 flex items-center gap-1 z-20">
+                {onEditCategory && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.1 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditCategory(category);
+                    }}
+                    className="w-5 h-5 rounded-full bg-background border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-muted-foreground/60 transition-colors"
+                    title="Editar categoria"
+                  >
+                    <Pencil size={10} />
+                  </motion.button>
+                )}
+                {onDeleteCategory && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.1 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteCategory(category);
+                    }}
+                    className="w-5 h-5 rounded-full bg-background border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:text-destructive hover:border-destructive/60 transition-colors"
+                    title="Excluir categoria"
+                  >
+                    <Trash2 size={10} />
+                  </motion.button>
+                )}
+              </div>
             )}
           </div>
         );

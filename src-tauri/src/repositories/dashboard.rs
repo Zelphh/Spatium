@@ -51,6 +51,7 @@ pub async fn fetch_dashboard_data(
         SELECT
             id,
             category_name AS category,
+            category_color,
             mode,
             description,
             duration_secs,
