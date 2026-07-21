@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon, Palette, Database } from "lucide-react";
+import { Sun, Moon, Palette, Database, Power } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +19,11 @@ import {
   type AccentColor,
 } from "@/contexts/AccentContext";
 import { seedSampleData, clearSampleData } from "@/lib/dev";
+import {
+  isAutostartEnabled,
+  enableAutostart,
+  disableAutostart,
+} from "@/lib/autostart";
 
 const accentOptions: { key: AccentColor; label: string }[] = [
   { key: "violet", label: "Violeta" },
@@ -33,6 +39,32 @@ const Settings = () => {
   const { accent, setAccent } = useAccent();
   const [devLoading, setDevLoading] = useState(false);
   const [devMessage, setDevMessage] = useState<string | null>(null);
+  const [autostart, setAutostart] = useState(false);
+  const [autostartLoading, setAutostartLoading] = useState(false);
+  const [autostartError, setAutostartError] = useState<string | null>(null);
+
+  useEffect(() => {
+    isAutostartEnabled()
+      .then(setAutostart)
+      .catch((e) => setAutostartError(String(e)));
+  }, []);
+
+  async function handleAutostartChange(checked: boolean) {
+    setAutostartLoading(true);
+    setAutostartError(null);
+    try {
+      if (checked) {
+        await enableAutostart();
+      } else {
+        await disableAutostart();
+      }
+      setAutostart(checked);
+    } catch (e) {
+      setAutostartError(String(e));
+    } finally {
+      setAutostartLoading(false);
+    }
+  }
 
   async function handleSeed() {
     setDevLoading(true);
@@ -198,6 +230,37 @@ const Settings = () => {
                   );
                 })}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Autostart */}
+          <Card className="border-border/60">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Power size={16} className="text-primary" />
+                Iniciar com o Windows
+              </CardTitle>
+            </CardHeader>
+            <Separator />
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <Label className="text-sm text-foreground block">
+                    Abrir o Spatium automaticamente ao ligar o computador
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Necessário para que os atalhos globais funcionem mesmo sem abrir o app manualmente. O app inicia minimizado na bandeja.
+                  </p>
+                </div>
+                <Switch
+                  checked={autostart}
+                  disabled={autostartLoading}
+                  onCheckedChange={handleAutostartChange}
+                />
+              </div>
+              {autostartError && (
+                <p className="text-xs text-destructive mt-3">{autostartError}</p>
+              )}
             </CardContent>
           </Card>
 

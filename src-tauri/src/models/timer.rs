@@ -16,6 +16,14 @@ pub struct CreateTimerResponse {
     pub id: i64,
 }
 
+#[derive(Serialize, Debug)]
+pub struct ActiveTimerSession {
+    pub session_id: i64,
+    pub mode: String,
+    pub elapsed_secs: i64,
+    pub is_paused: bool,
+}
+
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum TimerEventType {

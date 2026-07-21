@@ -86,6 +86,54 @@ pub async fn add_total_secs_to_session(
     Ok(())
 }
 
+pub async fn get_active_session_id(pool: &SqlitePool, user_id: i64) -> Result<Option<i64>, String> {
+    sqlx::query_scalar(
+        r#"
+        SELECT ts.id
+        FROM timer_session ts
+        WHERE ts.user_id = ?1
+          AND ts.deleted_at IS NULL
+          AND (
+              SELECT tse.event
+              FROM timer_session_event tse
+              WHERE tse.session_id = ts.id
+              ORDER BY tse.created_at DESC, tse.id DESC
+              LIMIT 1
+          ) IS NOT 'finished'
+        ORDER BY ts.created_at DESC
+        LIMIT 1
+        "#,
+    )
+    .bind(user_id)
+    .fetch_optional(pool)
+    .await
+    .map_err(|error| format!("Falha ao buscar sessão ativa do timer: {error}"))
+}
+
+pub async fn get_session_mode(pool: &SqlitePool, session_id: i64) -> Result<String, String> {
+    sqlx::query_scalar("SELECT mode FROM timer_session WHERE id = ?1")
+        .bind(session_id)
+        .fetch_one(pool)
+        .await
+        .map_err(|error| format!("Falha ao buscar o modo da sessão do timer: {error}"))
+}
+
+pub async fn get_last_event(pool: &SqlitePool, session_id: i64) -> Result<Option<String>, String> {
+    sqlx::query_scalar(
+        r#"
+        SELECT event
+        FROM timer_session_event
+        WHERE session_id = ?1
+        ORDER BY created_at DESC, id DESC
+        LIMIT 1
+        "#,
+    )
+    .bind(session_id)
+    .fetch_optional(pool)
+    .await
+    .map_err(|error| format!("Falha ao buscar o último evento da sessão do timer: {error}"))
+}
+
 pub async fn insert_timer_session(
     pool: &SqlitePool,
     payload: CreateTimerPayload,

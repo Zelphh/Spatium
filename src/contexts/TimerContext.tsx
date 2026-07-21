@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { listen } from '@tauri-apps/api/event';
 import { DEFAULT_POMODORO_SETTINGS, TimerMode } from '@/pages/type';
-import { addEventTimer, createTimer, type TimerEvent } from '@/lib/timer';
+import { addEventTimer, createTimer, getActiveTimerSession, type ActiveTimerSession, type TimerEvent } from '@/lib/timer';
 
 interface ResetOptions {
   recordEvent?: boolean;
@@ -42,6 +43,49 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     sessionIdRef.current = sessionId;
   }, [sessionId]);
+
+  const applyActiveSession = useCallback((session: ActiveTimerSession | null) => {
+    if (!session) return;
+    sessionIdRef.current = session.session_id;
+    setSessionId(session.session_id);
+    setModeState(session.mode);
+    setElapsedTime(session.elapsed_secs);
+    if (session.is_paused) {
+      setIsRunning(false);
+      startTimeRef.current = null;
+    } else {
+      setIsRunning(true);
+      startTimeRef.current = Date.now() - session.elapsed_secs * 1000;
+    }
+  }, []);
+
+  // Restaura uma sessão já em andamento (ex.: iniciada pelo atalho global ou pela janela
+  // de início rápido enquanto a janela principal estava fechada/em segundo plano).
+  useEffect(() => {
+    getActiveTimerSession()
+      .then(applyActiveSession)
+      .catch((error) => console.error('Falha ao restaurar sessão ativa do timer:', error));
+  }, [applyActiveSession]);
+
+  useEffect(() => {
+    const unlistenStarted = listen('timer-session-started', () => {
+      getActiveTimerSession()
+        .then(applyActiveSession)
+        .catch((error) => console.error('Falha ao sincronizar timer iniciado:', error));
+    });
+    const unlistenFinished = listen('timer-session-finished', () => {
+      setIsRunning(false);
+      setElapsedTime(0);
+      startTimeRef.current = null;
+      sessionIdRef.current = null;
+      setSessionId(null);
+    });
+
+    return () => {
+      void unlistenStarted.then((f) => f());
+      void unlistenFinished.then((f) => f());
+    };
+  }, [applyActiveSession]);
 
   const targetTime = useMemo(() => {
     if (mode === 'pomodoro') return DEFAULT_POMODORO_SETTINGS.workDuration * 60;

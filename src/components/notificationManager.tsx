@@ -1,6 +1,7 @@
 import { useTheme } from "next-themes";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Toaster as Sonner, toast } from "sonner";
+import { listen } from "@tauri-apps/api/event";
 
 type NotificationManagerProps = React.ComponentProps<typeof Sonner>;
 
@@ -32,6 +33,20 @@ export function notify({
 
 const NotificationManager = ({ ...props }: NotificationManagerProps) => {
   const { theme = "system" } = useTheme();
+
+  useEffect(() => {
+    const unlistenStarted = listen("timer-session-started", () => {
+      notify({ message: "Timer iniciado pelo atalho global" });
+    });
+    const unlistenFinished = listen("timer-session-finished", () => {
+      notify({ message: "Timer finalizado pelo atalho global" });
+    });
+
+    return () => {
+      void unlistenStarted.then((f) => f());
+      void unlistenFinished.then((f) => f());
+    };
+  }, []);
 
   return (
     <Sonner

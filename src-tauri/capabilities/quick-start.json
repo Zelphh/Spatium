@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "quick-start",
+  "description": "Capability for the quick-start popup window",
+  "windows": ["quick-start"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:event:allow-emit"
+  ]
+}

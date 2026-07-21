@@ -1,11 +1,37 @@
 use sqlx::SqlitePool;
 
 use crate::models::timer::{
-    AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, UpdateCategoryPayload, CreateTimerResponse, TimerEventResponse
+    ActiveTimerSession, AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, UpdateCategoryPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, delete_category, get_categories, insert_category, update_category, insert_timer_event, insert_timer_session
+    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, delete_category, get_active_session_id, get_categories, get_last_event, get_session_mode, insert_category, update_category, insert_timer_event, insert_timer_session
 };
+
+pub async fn get_active_session_id_service(pool: &SqlitePool, user_id: i64) -> Result<Option<i64>, String> {
+    get_active_session_id(pool, user_id).await
+}
+
+pub async fn get_active_timer_session_service(
+    pool: &SqlitePool,
+    user_id: i64,
+) -> Result<Option<ActiveTimerSession>, String> {
+    let Some(session_id) = get_active_session_id(pool, user_id).await? else {
+        return Ok(None);
+    };
+
+    let mode = get_session_mode(pool, session_id).await?;
+    let last_event = get_last_event(pool, session_id)
+        .await?
+        .unwrap_or_else(|| "started".to_string());
+    let elapsed_secs = calc_session_duration_secs(pool, &session_id).await?;
+
+    Ok(Some(ActiveTimerSession {
+        session_id,
+        mode,
+        elapsed_secs,
+        is_paused: last_event == "paused",
+    }))
+}
 
 pub async fn create_timer_service(
     pool: &SqlitePool,

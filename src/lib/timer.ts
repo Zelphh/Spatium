@@ -15,6 +15,13 @@ export interface CreateTimerResponse {
   id: number;
 }
 
+export interface ActiveTimerSession {
+  session_id: number;
+  mode: TimerMode;
+  elapsed_secs: number;
+  is_paused: boolean;
+}
+
 export interface AddTimerEventPayload {
   timer_id: number;
   event: TimerEvent;
@@ -58,6 +65,10 @@ export interface DeleteCategoryPayload {
 
 export function createTimer(payload: CreateTimerPayload) {
   return invoke<CreateTimerResponse>("create_timer", { payload });
+}
+
+export function getActiveTimerSession() {
+  return invoke<ActiveTimerSession | null>("get_active_timer_session");
 }
 
 export function addEventTimer(payload: AddTimerEventPayload) {
