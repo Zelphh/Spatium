@@ -22,6 +22,9 @@ pub struct ActiveTimerSession {
     pub mode: String,
     pub elapsed_secs: i64,
     pub is_paused: bool,
+    pub category_id: Option<i64>,
+    pub description: Option<String>,
+    pub duration_secs: i64,
 }
 
 #[derive(Deserialize, Debug)]

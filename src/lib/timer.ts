@@ -20,6 +20,9 @@ export interface ActiveTimerSession {
   mode: TimerMode;
   elapsed_secs: number;
   is_paused: boolean;
+  category_id: number | null;
+  description: string | null;
+  duration_secs: number;
 }
 
 export interface AddTimerEventPayload {

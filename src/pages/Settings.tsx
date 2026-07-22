@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon, Palette, Database, Power } from "lucide-react";
+import { Sun, Moon, Palette, Database, Power, Keyboard } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -24,6 +24,22 @@ import {
   enableAutostart,
   disableAutostart,
 } from "@/lib/autostart";
+import {
+  getShortcuts,
+  updateShortcut,
+  type ShortcutBinding,
+} from "@/lib/shortcuts";
+
+const MODIFIER_CODES = [
+  "ControlLeft",
+  "ControlRight",
+  "AltLeft",
+  "AltRight",
+  "ShiftLeft",
+  "ShiftRight",
+  "MetaLeft",
+  "MetaRight",
+];
 
 const accentOptions: { key: AccentColor; label: string }[] = [
   { key: "violet", label: "Violeta" },
@@ -42,12 +58,63 @@ const Settings = () => {
   const [autostart, setAutostart] = useState(false);
   const [autostartLoading, setAutostartLoading] = useState(false);
   const [autostartError, setAutostartError] = useState<string | null>(null);
+  const [shortcuts, setShortcuts] = useState<ShortcutBinding[]>([]);
+  const [recordingActionId, setRecordingActionId] = useState<number | null>(null);
+  const [shortcutsError, setShortcutsError] = useState<string | null>(null);
 
   useEffect(() => {
     isAutostartEnabled()
       .then(setAutostart)
       .catch((e) => setAutostartError(String(e)));
   }, []);
+
+  useEffect(() => {
+    getShortcuts()
+      .then(setShortcuts)
+      .catch((e) => setShortcutsError(String(e)));
+  }, []);
+
+  useEffect(() => {
+    if (recordingActionId === null) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      e.preventDefault();
+
+      if (e.code === "Escape") {
+        setRecordingActionId(null);
+        return;
+      }
+      if (MODIFIER_CODES.includes(e.code)) return;
+
+      const mods: string[] = [];
+      if (e.ctrlKey) mods.push("CommandOrControl");
+      if (e.altKey) mods.push("Alt");
+      if (e.shiftKey) mods.push("Shift");
+
+      if (mods.length === 0) {
+        setShortcutsError(
+          "Escolha um atalho com pelo menos uma tecla modificadora (Ctrl, Alt ou Shift).",
+        );
+        return;
+      }
+
+      const actionId = recordingActionId;
+      const keys = [...mods, e.code].join("+");
+      setRecordingActionId(null);
+      setShortcutsError(null);
+
+      updateShortcut({ action_id: actionId, keys })
+        .then((updated) => {
+          setShortcuts((prev) =>
+            prev.map((s) => (s.action_id === actionId ? updated : s)),
+          );
+        })
+        .catch((error) => setShortcutsError(String(error)));
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [recordingActionId]);
 
   async function handleAutostartChange(checked: boolean) {
     setAutostartLoading(true);
@@ -260,6 +327,66 @@ const Settings = () => {
               </div>
               {autostartError && (
                 <p className="text-xs text-destructive mt-3">{autostartError}</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Global Shortcuts */}
+          <Card className="border-border/60">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Keyboard size={16} className="text-primary" />
+                Atalhos Globais
+              </CardTitle>
+            </CardHeader>
+            <Separator />
+            <CardContent className="p-6">
+              <Label className="text-sm text-muted-foreground mb-4 block">
+                Funcionam mesmo com o Spatium minimizado na bandeja
+              </Label>
+              <div className="space-y-2">
+                {shortcuts.map((shortcut) => (
+                  <div
+                    key={shortcut.action_id}
+                    className="flex items-center justify-between gap-4 p-3 rounded-xl border border-border"
+                  >
+                    <span className="text-sm text-foreground">
+                      {shortcut.action_label}
+                    </span>
+                    <div className="flex items-center gap-3">
+                      {recordingActionId === shortcut.action_id ? (
+                        <span className="text-xs text-primary">
+                          Pressione uma combinação... (Esc cancela)
+                        </span>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          {shortcut.keys.split("+").map((part, i) => (
+                            <kbd
+                              key={i}
+                              className="px-2 py-1 rounded border border-border bg-muted text-xs font-mono text-muted-foreground"
+                            >
+                              {part}
+                            </kbd>
+                          ))}
+                        </div>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setShortcutsError(null);
+                          setRecordingActionId(shortcut.action_id);
+                        }}
+                        disabled={recordingActionId !== null}
+                      >
+                        Gravar novo atalho
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {shortcutsError && (
+                <p className="text-xs text-destructive mt-3">{shortcutsError}</p>
               )}
             </CardContent>
           </Card>

@@ -104,6 +104,10 @@ async fn main() {
                 if let Err(e) = shortcuts_runtime::register_all_from_db(&app_handle, &state.db).await {
                     eprintln!("✗ Falha ao registrar atalhos globais: {e}");
                 }
+                #[cfg(debug_assertions)]
+                if let Ok(list) = services::shortcuts::get_shortcuts_service(&state.db).await {
+                    println!("[debug] atalhos efetivos: {:?}", list);
+                }
 
                 app_handle.manage(state);
             });

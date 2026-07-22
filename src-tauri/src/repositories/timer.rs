@@ -110,12 +110,24 @@ pub async fn get_active_session_id(pool: &SqlitePool, user_id: i64) -> Result<Op
     .map_err(|error| format!("Falha ao buscar sessão ativa do timer: {error}"))
 }
 
-pub async fn get_session_mode(pool: &SqlitePool, session_id: i64) -> Result<String, String> {
-    sqlx::query_scalar("SELECT mode FROM timer_session WHERE id = ?1")
-        .bind(session_id)
-        .fetch_one(pool)
-        .await
-        .map_err(|error| format!("Falha ao buscar o modo da sessão do timer: {error}"))
+/// `duration_secs` aqui é a duração ALVO (definida na criação da sessão) — só é
+/// sobrescrita com a duração real decorrida quando a sessão recebe o evento `finished`
+/// (ver `add_total_secs_to_session`), então para uma sessão ainda ativa este valor é confiável.
+pub async fn get_session_summary(
+    pool: &SqlitePool,
+    session_id: i64,
+) -> Result<(String, Option<i64>, Option<String>, i64), String> {
+    sqlx::query_as(
+        r#"
+        SELECT mode, category_id, description, duration_secs
+        FROM timer_session
+        WHERE id = ?1
+        "#,
+    )
+    .bind(session_id)
+    .fetch_one(pool)
+    .await
+    .map_err(|error| format!("Falha ao buscar resumo da sessão do timer: {error}"))
 }
 
 pub async fn get_last_event(pool: &SqlitePool, session_id: i64) -> Result<Option<String>, String> {

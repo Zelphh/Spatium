@@ -4,7 +4,7 @@ use crate::models::timer::{
     ActiveTimerSession, AddTimerEventPayload, Category, ChangeCategoryPayload, ChangeDescriptionPayload, ChangeNotesPayload, CreateCategoryPayload, UpdateCategoryPayload, CreateTimerResponse, TimerEventResponse
 };
 use crate::repositories::timer::{
-    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, delete_category, get_active_session_id, get_categories, get_last_event, get_session_mode, insert_category, update_category, insert_timer_event, insert_timer_session
+    add_total_secs_to_session, calc_session_duration_secs, change_category, change_description, change_notes, delete_category, get_active_session_id, get_categories, get_last_event, get_session_summary, insert_category, update_category, insert_timer_event, insert_timer_session
 };
 
 pub async fn get_active_session_id_service(pool: &SqlitePool, user_id: i64) -> Result<Option<i64>, String> {
@@ -19,7 +19,7 @@ pub async fn get_active_timer_session_service(
         return Ok(None);
     };
 
-    let mode = get_session_mode(pool, session_id).await?;
+    let (mode, category_id, description, duration_secs) = get_session_summary(pool, session_id).await?;
     let last_event = get_last_event(pool, session_id)
         .await?
         .unwrap_or_else(|| "started".to_string());
@@ -30,6 +30,9 @@ pub async fn get_active_timer_session_service(
         mode,
         elapsed_secs,
         is_paused: last_event == "paused",
+        category_id,
+        description,
+        duration_secs,
     }))
 }
 
