@@ -10,9 +10,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 interface CreateCategoryDialogProps {
   open: boolean;
@@ -91,7 +88,7 @@ export function CreateCategoryDialog({
       notify({
         title: isEditing ? "Erro ao atualizar categoria" : "Erro ao criar categoria",
         message: String(err),
-        borderColor: "hsl(var(--destructive))",
+        borderColor: "var(--danger)",
       });
     } finally {
       setLoading(false);
@@ -100,79 +97,74 @@ export function CreateCategoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{isEditing ? "Editar categoria" : "Nova categoria"}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-5 py-2">
-          {/* Nome */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="category-name" className="mb-1">Nome</Label>
-            <Input
-              id="category-name"
-              placeholder="Ex: Estudo, Trabalho..."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              autoFocus
+        <label className="lab">
+          Nome
+          <input
+            className="input"
+            type="text"
+            placeholder="Ex: Estudo, Trabalho..."
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+            autoFocus
+          />
+        </label>
+
+        <div className="lab">
+          Cor
+          <div className="row">
+            <input
+              type="color"
+              aria-label="Cor da categoria"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              style={{ width: 64, height: 48, border: 0, borderRadius: 24, padding: 0, background: "none", cursor: "pointer" }}
             />
-          </div>
-
-          {/* Cor */}
-          <div className="flex flex-col gap-1.5">
-            <Label>Cor</Label>
-            <div className="flex items-center gap-3">
-              <div
-                className="w-8 h-8 rounded-full border-2 border-border flex-shrink-0"
-                style={{ backgroundColor: color }}
-              />
-              <input
-                type="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="h-9 w-full cursor-pointer rounded-md border border-input bg-transparent px-1"
-              />
-            </div>
-          </div>
-
-          {/* Ícone */}
-          <div className="flex flex-col gap-1.5">
-            <Label>Ícone</Label>
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(categoryIcons).map(([key, Icon]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setSelectedIcon(key)}
-                  className={`w-9 h-9 rounded-lg border-2 flex items-center justify-center transition-all duration-150
-                    ${selectedIcon === key
-                      ? "border-transparent shadow-md"
-                      : "border-border hover:border-muted-foreground/40 bg-card"
-                    }`}
-                  style={selectedIcon === key ? { backgroundColor: color } : undefined}
-                  title={key}
-                >
-                  <Icon
-                    size={16}
-                    className={selectedIcon === key ? "text-white" : "text-muted-foreground"}
-                  />
-                </button>
-              ))}
-            </div>
+            <span
+              className="dot"
+              style={{
+                background: color,
+                width: 34,
+                height: 34,
+                boxShadow: `0 0 0 4px color-mix(in srgb, ${color} 28%, transparent)`,
+              }}
+            />
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => handleClose(false)} disabled={loading}>
+        <div className="lab">
+          Ícone
+          <div className="icgrid" role="group" aria-label="Ícone">
+            {Object.entries(categoryIcons).map(([key, Icon]) => (
+              <button
+                key={key}
+                type="button"
+                className={selectedIcon === key ? "sel" : ""}
+                aria-label={key}
+                aria-pressed={selectedIcon === key}
+                onClick={() => setSelectedIcon(key)}
+              >
+                <Icon size={22} strokeWidth={1.8} aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <DialogFooter className="mt-1">
+          <button type="button" className="btn ghost" onClick={() => handleClose(false)} disabled={loading}>
             Cancelar
-          </Button>
-          <Button onClick={handleSubmit} disabled={!name.trim() || loading}>
+          </button>
+          <button type="button" className="btn" onClick={handleSubmit} disabled={!name.trim() || loading}>
             {loading
               ? isEditing ? "Salvando..." : "Criando..."
               : isEditing ? "Salvar" : "Criar"
             }
-          </Button>
+          </button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

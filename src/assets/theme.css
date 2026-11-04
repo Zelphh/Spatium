@@ -1,108 +1,102 @@
 @layer base {
+  /* Tema claro */
   :root {
-    /* Semantic base tokens */
-    --primary: 263 70% 60%;
+    /* Tokens do design Spatium */
+    --bg: #f3f1ee;
+    --surf: rgba(255, 255, 255, 0.72);
+    --surf2: rgba(255, 255, 255, 0.95);
+    --line: rgba(30, 25, 50, 0.12);
+    --ink: #1d1b24;
+    --mut: #5b5868;
+    --on: #ffffff;
+    --danger: #b91c1c;
+    --ac: #6d3fe0;
+    --ac2: #a21caf;
+
+    /* Ponte para os componentes shadcn (triplets HSL) */
+    --primary: 257 72% 56%;
+    --primary-foreground: 0 0% 100%;
 
     --success: 142 71% 45%;
     --error: 0 84% 60%;
     --warning: 38 92% 50%;
     --info: 199 89% 48%;
 
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 36 17% 94%;
+    --foreground: 253 14% 12%;
 
-    /* Semantic surfaces */
-    --border: 214 31.8% 91.4%;
-    --input: 214 31.8% 91.4%;
+    --border: 252 20% 85%;
+    --input: 252 20% 85%;
     --card: 0 0% 100%;
-    --card-foreground: 224 15% 12%;
+    --card-foreground: 253 14% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 15% 12%;
+    --popover-foreground: 253 14% 12%;
 
-    --primary-foreground: 0 0% 100%;
-    --secondary: 224 15% 90%;
-    --secondary-foreground: 224 15% 30%;
-    --muted: 224 12% 88%;
-    --muted-foreground: 224 10% 50%;
+    --secondary: 252 15% 90%;
+    --secondary-foreground: 251 8% 30%;
+    --muted: 252 15% 90%;
+    --muted-foreground: 251 8% 38%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 100%;
 
-    --radius: 0.75rem;
+    --radius: 1.5rem;
 
-    /* Derived color aliases for direct CSS usage */
-    --color-primary: hsl(var(--primary));
-    --color-primary-soft: hsl(var(--primary) / 0.15);
-    --color-primary-hover: hsl(var(--primary) / 0.9);
-    --color-ring: hsl(var(--primary));
-
-    /* Derived bridge tokens used by Tailwind semantic palette */
     --ring: var(--primary);
     --accent: var(--primary) / 0.15;
     --accent-foreground: var(--foreground);
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 224 15% 25%;
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: 224 15% 94%;
-    --sidebar-accent-foreground: var(--primary);
-    --sidebar-border: 224 12% 88%;
-    --sidebar-ring: var(--primary);
-
-    /* Category colors */
-    --category-work: 263 70% 60%;
-    --category-study: 188 85% 45%;
-    --category-games: 230 70% 60%;
-    --category-custom: 200 70% 60%;
-
-    /* Stats card accent backgrounds */
-    --stat-today: 263 40% 88%;
-    --stat-week: 188 40% 85%;
-    --stat-daily: 35 40% 85%;
   }
 
+  /* Tema escuro */
   .dark {
-    --background: 224 25% 7%;
-    --foreground: 220 15% 92%;
+    --bg: #100f17;
+    --surf: rgba(255, 255, 255, 0.06);
+    --surf2: rgba(255, 255, 255, 0.1);
+    --line: rgba(255, 255, 255, 0.13);
+    --ink: #f3f1f8;
+    --mut: #aaa6ba;
+    --on: #14121c;
+    --ac: #a78bfa;
+    --ac2: #e879f9;
 
-    --border: 224 18% 16%;
-    --input: 224 18% 14%;
-    --card: 224 22% 10%;
-    --card-foreground: 220 15% 92%;
-    --popover: 224 22% 10%;
-    --popover-foreground: 220 15% 92%;
+    --primary: 255 92% 76%;
+    --primary-foreground: 253 20% 9%;
 
-    --primary-foreground: 0 0% 100%;
-    --secondary: 224 20% 14%;
-    --secondary-foreground: 220 10% 75%;
-    --muted: 224 18% 16%;
-    --muted-foreground: 220 8% 55%;
+    --background: 248 21% 7%;
+    --foreground: 257 33% 96%;
 
-    --destructive: 0 62% 40%;
+    --border: 252 12% 20%;
+    --input: 252 12% 20%;
+    --card: 250 18% 11%;
+    --card-foreground: 257 33% 96%;
+    --popover: 250 18% 11%;
+    --popover-foreground: 257 33% 96%;
+
+    --secondary: 252 12% 16%;
+    --secondary-foreground: 252 13% 75%;
+    --muted: 252 12% 16%;
+    --muted-foreground: 252 13% 69%;
+
+    --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Derived tokens continue to react to --primary in dark mode */
     --ring: var(--primary);
     --accent: var(--primary) / 0.22;
     --accent-foreground: var(--foreground);
-
-    --sidebar-background: 224 22% 10%;
-    --sidebar-foreground: 220 10% 80%;
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: 224 20% 14%;
-    --sidebar-accent-foreground: var(--primary);
-    --sidebar-border: 224 18% 16%;
-    --sidebar-ring: var(--primary);
-
-    --category-work: 263 70% 60%;
-    --category-study: 230 70% 60%;
-    --category-games: 340 80% 60%;
-    --category-custom: 200 70% 60%;
-
-    --stat-today: 263 30% 16%;
-    --stat-week: 188 30% 14%;
-    --stat-daily: 35 30% 14%;
   }
+
+  /* Cores de destaque (definidas via data-accent no <html>) */
+  :root[data-accent="violet"] { --ac: #6d3fe0; --ac2: #a21caf; --primary: 257 72% 56%; }
+  :root[data-accent="cyan"] { --ac: #0e7490; --ac2: #1d4ed8; --primary: 193 82% 31%; }
+  :root[data-accent="rose"] { --ac: #be185d; --ac2: #b45309; --primary: 335 78% 42%; }
+  :root[data-accent="amber"] { --ac: #b45309; --ac2: #be185d; --primary: 26 90% 37%; }
+  :root[data-accent="emerald"] { --ac: #047857; --ac2: #0e7490; --primary: 163 94% 24%; }
+  :root[data-accent="blue"] { --ac: #1d4ed8; --ac2: #6d3fe0; --primary: 224 76% 48%; }
+
+  :root.dark[data-accent="violet"] { --ac: #a78bfa; --ac2: #e879f9; --primary: 255 92% 76%; }
+  :root.dark[data-accent="cyan"] { --ac: #22d3ee; --ac2: #60a5fa; --primary: 188 86% 53%; }
+  :root.dark[data-accent="rose"] { --ac: #f472b6; --ac2: #fbbf24; --primary: 329 86% 70%; }
+  :root.dark[data-accent="amber"] { --ac: #fbbf24; --ac2: #fb7185; --primary: 43 96% 56%; }
+  :root.dark[data-accent="emerald"] { --ac: #34d399; --ac2: #22d3ee; --primary: 158 64% 52%; }
+  :root.dark[data-accent="blue"] { --ac: #60a5fa; --ac2: #a78bfa; --primary: 213 94% 68%; }
 }

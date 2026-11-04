@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 interface DeleteCategoryDialogProps {
   category: Category | null;
@@ -38,7 +37,7 @@ export function DeleteCategoryDialog({
       notify({
         title: "Erro ao excluir categoria",
         message: String(err),
-        borderColor: "hsl(var(--destructive))",
+        borderColor: "var(--danger)",
       });
     } finally {
       setLoading(false);
@@ -47,21 +46,21 @@ export function DeleteCategoryDialog({
 
   return (
     <Dialog open={category !== null} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent role="alertdialog">
         <DialogHeader>
-          <DialogTitle>Excluir categoria</DialogTitle>
+          <DialogTitle>Excluir “{category?.name}”?</DialogTitle>
           <DialogDescription>
-            Tem certeza que deseja excluir a categoria "{category?.name}"? As sessões que usam essa categoria ficarão sem categoria.
+            As sessões dessa categoria ficarão sem categoria. Essa ação não pode ser desfeita.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+          <button type="button" className="btn ghost" onClick={() => onOpenChange(false)} disabled={loading}>
             Cancelar
-          </Button>
-          <Button variant="destructive" onClick={handleDelete} disabled={loading}>
+          </button>
+          <button type="button" className="btn danger" onClick={handleDelete} disabled={loading}>
             {loading ? "Excluindo..." : "Excluir"}
-          </Button>
+          </button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

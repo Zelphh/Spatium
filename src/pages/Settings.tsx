@@ -1,17 +1,6 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Sun, Moon, Palette, Database, Power, Keyboard } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
   useAccent,
@@ -41,14 +30,15 @@ const MODIFIER_CODES = [
   "MetaRight",
 ];
 
-const accentOptions: { key: AccentColor; label: string }[] = [
-  { key: "violet", label: "Violeta" },
-  { key: "cyan", label: "Ciano" },
-  { key: "rose", label: "Rosa" },
-  { key: "amber", label: "Âmbar" },
-  { key: "emerald", label: "Esmeralda" },
-  { key: "blue", label: "Azul" },
-];
+const accentOptions = Object.keys(accentMap) as AccentColor[];
+
+/** "CommandOrControl+Alt+KeyI" → ["Ctrl", "Alt", "I"] */
+function formatShortcutKeys(keys: string) {
+  return keys.split("+").map((part) => {
+    if (part === "CommandOrControl" || part === "Control") return "Ctrl";
+    return part.replace(/^Key([A-Z])$/, "$1").replace(/^Digit(\d)$/, "$1");
+  });
+}
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
@@ -159,273 +149,152 @@ const Settings = () => {
     }
   }
 
+  const isDark = theme !== "light";
+
   return (
-    <div className="p-8 max-w-5xl mx-auto w-full">
-        <motion.div
-          className="mb-8"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <h1 className="text-2xl font-bold text-foreground">Configurações</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Personalize a aparência do Spatium
-          </p>
-        </motion.div>
+    <section className="screen" aria-label="Configurações">
+      <h1 className="h h1">Configurações</h1>
 
-        <motion.div
-          className="space-y-6"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          {/* Theme */}
-          <Card className="border-border/60">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Palette size={16} className="text-primary" />
-                Tema
-              </CardTitle>
-            </CardHeader>
-            <Separator />
-            <CardContent className="p-6">
-              <Label className="text-sm text-muted-foreground mb-4 block">
-                Selecione o tema do aplicativo
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => setTheme("light")}
-                  className={cn(
-                    "flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200",
-                    theme === "light"
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-muted-foreground/30",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "w-10 h-10 rounded-lg flex items-center justify-center",
-                      theme === "light"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground",
-                    )}
-                  >
-                    <Sun size={18} />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">Claro</p>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setTheme("dark")}
-                  className={cn(
-                    "flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200",
-                    theme === "dark"
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-muted-foreground/30",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "w-10 h-10 rounded-lg flex items-center justify-center",
-                      theme === "dark"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground",
-                    )}
-                  >
-                    <Moon size={18} />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">
-                      Escuro
-                    </p>
-                  </div>
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Accent Color */}
-          <Card className="border-border/60">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Palette size={16} className="text-primary" />
-                Cor Principal
-              </CardTitle>
-            </CardHeader>
-            <Separator />
-            <CardContent className="p-6">
-              <Label className="text-sm text-muted-foreground mb-4 block">
-                Escolha a cor de destaque do aplicativo
-              </Label>
-              <div className="grid grid-cols-3 gap-3">
-                {accentOptions.map(({ key, label }) => {
-                  const { h, s, l } = accentMap[key];
-                  const color = `hsl(${h}, ${s}%, ${l}%)`;
-                  const isSelected = accent === key;
-
-                  return (
-                    <Tooltip key={key}>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => setAccent(key)}
-                          className={cn(
-                            "flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200",
-                            isSelected
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-muted-foreground/30",
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "w-8 h-8 rounded-full shrink-0 transition-transform",
-                              isSelected &&
-                                "scale-110 ring-2 ring-offset-2 ring-offset-background ring-foreground/20",
-                            )}
-                            style={{ backgroundColor: color }}
-                          />
-                          <span className="text-sm font-medium text-foreground overflow-hidden">
-                            {label}
-                          </span>
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs">
-                        {label}
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Autostart */}
-          <Card className="border-border/60">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Power size={16} className="text-primary" />
-                Iniciar com o Windows
-              </CardTitle>
-            </CardHeader>
-            <Separator />
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <Label className="text-sm text-foreground block">
-                    Abrir o Spatium automaticamente ao ligar o computador
-                  </Label>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Necessário para que os atalhos globais funcionem mesmo sem abrir o app manualmente. O app inicia minimizado na bandeja.
-                  </p>
-                </div>
-                <Switch
-                  checked={autostart}
-                  disabled={autostartLoading}
-                  onCheckedChange={handleAutostartChange}
-                />
-              </div>
-              {autostartError && (
-                <p className="text-xs text-destructive mt-3">{autostartError}</p>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Global Shortcuts */}
-          <Card className="border-border/60">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Keyboard size={16} className="text-primary" />
-                Atalhos Globais
-              </CardTitle>
-            </CardHeader>
-            <Separator />
-            <CardContent className="p-6">
-              <Label className="text-sm text-muted-foreground mb-4 block">
-                Funcionam mesmo com o Spatium minimizado na bandeja
-              </Label>
-              <div className="space-y-2">
-                {shortcuts.map((shortcut) => (
-                  <div
-                    key={shortcut.action_id}
-                    className="flex items-center justify-between gap-4 p-3 rounded-xl border border-border"
-                  >
-                    <span className="text-sm text-foreground">
-                      {shortcut.action_label}
-                    </span>
-                    <div className="flex items-center gap-3">
-                      {recordingActionId === shortcut.action_id ? (
-                        <span className="text-xs text-primary">
-                          Pressione uma combinação... (Esc cancela)
-                        </span>
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          {shortcut.keys.split("+").map((part, i) => (
-                            <kbd
-                              key={i}
-                              className="px-2 py-1 rounded border border-border bg-muted text-xs font-mono text-muted-foreground"
-                            >
-                              {part}
-                            </kbd>
-                          ))}
-                        </div>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setShortcutsError(null);
-                          setRecordingActionId(shortcut.action_id);
-                        }}
-                        disabled={recordingActionId !== null}
-                      >
-                        Gravar novo atalho
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {shortcutsError && (
-                <p className="text-xs text-destructive mt-3">{shortcutsError}</p>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Dev Tools — visible only in development builds */}
-          {import.meta.env.DEV && (
-            <Card className="border-dashed border-amber-500/50">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <Database size={16} className="text-amber-500" />
-                  Ferramentas de Desenvolvimento
-                </CardTitle>
-              </CardHeader>
-              <Separator />
-              <CardContent className="p-6 space-y-4">
-                <Label className="text-sm text-muted-foreground block">
-                  Gere ~90 sessões de exemplo espalhadas pelos últimos 30 dias para testar o dashboard e o histórico.
-                </Label>
-                <div className="flex gap-3 flex-wrap">
-                  <Button onClick={handleSeed} disabled={devLoading} size="sm">
-                    {devLoading ? "Aguarde..." : "Gerar dados de exemplo"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleClear}
-                    disabled={devLoading}
-                    size="sm"
-                  >
-                    {devLoading ? "Aguarde..." : "Limpar todas as sessões"}
-                  </Button>
-                </div>
-                {devMessage && (
-                  <p className="text-xs text-muted-foreground">{devMessage}</p>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </motion.div>
+      <div className="card">
+        <h2 className="h h2" style={{ marginBottom: 14 }}>
+          Tema
+        </h2>
+        <div className="g3">
+          <button type="button" className={cn("opt", isDark && "sel")} onClick={() => setTheme("dark")}>
+            <span className="prev" style={{ background: "#16141f", color: "#f3f1f8" }}>
+              <Moon className="ico" strokeWidth={1.8} aria-hidden="true" />
+            </span>
+            Escuro
+          </button>
+          <button type="button" className={cn("opt", !isDark && "sel")} onClick={() => setTheme("light")}>
+            <span className="prev" style={{ background: "#f3f1ee", color: "#1d1b24", border: "1px solid rgba(0,0,0,.12)" }}>
+              <Sun className="ico" strokeWidth={1.8} aria-hidden="true" />
+            </span>
+            Claro
+          </button>
+        </div>
       </div>
+
+      <div className="card alt">
+        <h2 className="h h2" style={{ marginBottom: 14 }}>
+          Cor principal
+        </h2>
+        <div className="row" style={{ gap: 14 }} role="group" aria-label="Cor principal">
+          {accentOptions.map((key) => {
+            const { label, light, dark } = accentMap[key];
+            const [from, to] = isDark ? dark : light;
+            const isSelected = accent === key;
+
+            return (
+              <span key={key} style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <button
+                  type="button"
+                  className={cn("swatch", isSelected && "sel")}
+                  style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
+                  title={label}
+                  aria-label={label}
+                  aria-pressed={isSelected}
+                  onClick={() => setAccent(key)}
+                />
+                <span className="mut" style={{ fontSize: 12, fontWeight: 600 }}>
+                  {label}
+                </span>
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="row" style={{ justifyContent: "space-between", flexWrap: "nowrap" }}>
+          <div>
+            <h2 className="h h2">Iniciar com o Windows</h2>
+            <div className="mut" style={{ fontSize: 14, marginTop: 4 }}>
+              Necessário para os atalhos globais funcionarem sem abrir o app. O app inicia minimizado na bandeja.
+            </div>
+          </div>
+          <button
+            type="button"
+            className={cn("sw", autostart && "on")}
+            role="switch"
+            aria-checked={autostart}
+            aria-label="Iniciar com o Windows"
+            disabled={autostartLoading}
+            onClick={() => handleAutostartChange(!autostart)}
+          >
+            <i />
+          </button>
+        </div>
+        {autostartError && (
+          <p style={{ fontSize: 13, margin: "12px 0 0", color: "var(--danger)" }}>{autostartError}</p>
+        )}
+      </div>
+
+      <div className="card alt">
+        <h2 className="h h2" style={{ marginBottom: 6 }}>
+          Atalhos Globais
+        </h2>
+        <p className="mut" style={{ fontSize: 14, margin: "0 0 14px" }}>
+          Funcionam mesmo com o Spatium minimizado na bandeja. Exige pelo menos um modificador (Ctrl, Alt ou Shift). Esc cancela.
+        </p>
+        <div className="list">
+          {shortcuts.map((shortcut) => {
+            const isRecording = recordingActionId === shortcut.action_id;
+            return (
+              <div key={shortcut.action_id} className="item" style={{ flexWrap: "wrap" }}>
+                <div className="grow" style={{ minWidth: 200 }}>
+                  <div className="t" style={{ whiteSpace: "normal" }}>
+                    {shortcut.action_label}
+                  </div>
+                  <div className="kbd" style={{ marginTop: 6 }}>
+                    {formatShortcutKeys(shortcut.keys).map((part, i) => (
+                      <span key={i}>{part}</span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn ghost"
+                  onClick={() => {
+                    setShortcutsError(null);
+                    setRecordingActionId(isRecording ? null : shortcut.action_id);
+                  }}
+                  disabled={recordingActionId !== null && !isRecording}
+                >
+                  {isRecording ? "Pressione as teclas…" : "Gravar novo atalho"}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        {shortcutsError && (
+          <p style={{ fontSize: 13, margin: "12px 0 0", color: "var(--danger)" }}>{shortcutsError}</p>
+        )}
+      </div>
+
+      {/* Dev Tools — visible only in development builds */}
+      {import.meta.env.DEV && (
+        <div className="card" style={{ borderStyle: "dashed", borderColor: "#f59e0b" }}>
+          <h2 className="h h2" style={{ marginBottom: 6 }}>
+            Ferramentas de Desenvolvimento
+          </h2>
+          <p className="mut" style={{ fontSize: 14, margin: "0 0 14px" }}>
+            Gere ~90 sessões de exemplo espalhadas pelos últimos 30 dias para testar o dashboard e o histórico.
+          </p>
+          <div className="row">
+            <button type="button" className="btn sm" onClick={handleSeed} disabled={devLoading}>
+              {devLoading ? "Aguarde..." : "Gerar dados de exemplo"}
+            </button>
+            <button type="button" className="btn ghost sm" onClick={handleClear} disabled={devLoading}>
+              {devLoading ? "Aguarde..." : "Limpar todas as sessões"}
+            </button>
+          </div>
+          {devMessage && (
+            <p className="mut" style={{ fontSize: 13, margin: "12px 0 0" }}>{devMessage}</p>
+          )}
+        </div>
+      )}
+    </section>
   );
 };
 

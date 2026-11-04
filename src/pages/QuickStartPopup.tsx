@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { emit } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Tag, Square } from "lucide-react";
+import { Square } from "lucide-react";
 import {
   getCategories,
   createTimer,
@@ -12,7 +12,8 @@ import {
 } from "@/lib/timer";
 import { getCategoryIcon } from "@/components/timer/CategorySelector";
 import type { Category } from "@/pages/type";
-import { cn } from "@/lib/utils";
+import { categoryTint } from "@/lib/utils";
+import { BrandMark } from "@/components/brand/BrandMark";
 
 const MODE_LABELS: Record<string, string> = {
   standard: "Padrão",
@@ -85,70 +86,67 @@ export default function QuickStartPopup() {
   }
 
   if (checkingActive) {
-    return <div className="h-screen w-screen bg-background" />;
+    return <div className="h-screen w-screen" />;
   }
 
   if (activeSession) {
     const category = categories.find((c) => Number(c.id) === activeSession.category_id);
     const Icon = getCategoryIcon(category?.icon);
+    const color = category?.color ?? "#94a3b8";
 
     return (
-      <div className="h-screen w-screen flex flex-col p-4 bg-background text-foreground select-none">
-        <div className="mb-2">
-          <h1 className="text-sm font-semibold">Timer em andamento</h1>
-          <p className="text-xs text-muted-foreground">
-            {MODE_LABELS[activeSession.mode] ?? activeSession.mode}
-          </p>
+      <div className="h-screen w-screen flex flex-col gap-4 p-5 select-none">
+        <div>
+          <div className="eyebrow">{MODE_LABELS[activeSession.mode] ?? activeSession.mode}</div>
+          <h1 className="h h2">Timer em andamento</h1>
         </div>
 
         <div className="flex-1 flex flex-col items-center justify-center gap-3">
           <span
-            className="w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground"
-            style={{ backgroundColor: category?.color ?? "hsl(var(--muted))" }}
+            className="grid place-items-center"
+            style={{ width: 56, height: 56, borderRadius: "50% 44% 52% 48%", ...categoryTint(color), color }}
           >
-            <Icon size={20} />
+            <Icon size={24} strokeWidth={1.8} />
           </span>
-          <p className="text-sm text-foreground">{category?.name ?? "Sem categoria"}</p>
-          <p className="text-2xl timer-display text-foreground">{formatDuration(elapsed)}</p>
-          {activeSession.is_paused && (
-            <p className="text-xs text-muted-foreground">Pausado</p>
-          )}
+          <span className="chip">
+            <span className="dot" style={{ background: color }} />
+            {category?.name ?? "Sem categoria"}
+          </span>
+          <p className="h tabular m-0" style={{ fontSize: 48, letterSpacing: "-0.04em" }}>
+            {formatDuration(elapsed)}
+          </p>
+          {activeSession.is_paused && <p className="mut m-0 text-sm font-semibold">Pausado</p>}
 
-          <button
-            onClick={handleStop}
-            disabled={stopping}
-            className="flex items-center gap-2 px-4 py-2 mt-2 rounded-lg border border-destructive/40 text-destructive text-sm hover:bg-destructive/10 transition-colors disabled:opacity-50"
-          >
-            <Square size={14} />
+          <button type="button" className="btn ghost mt-1" onClick={handleStop} disabled={stopping}>
+            <Square size={14} fill="currentColor" strokeWidth={0} />
             {stopping ? "Parando..." : "Parar"}
           </button>
         </div>
 
-        {error && <p className="text-xs text-destructive mt-3">{error}</p>}
+        {error && <p className="m-0 text-xs" style={{ color: "var(--danger)" }}>{error}</p>}
       </div>
     );
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col p-4 bg-background text-foreground select-none">
-      <div className="mb-3">
-        <h1 className="text-sm font-semibold">Início Rápido</h1>
-        <p className="text-xs text-muted-foreground">Escolha uma categoria para iniciar o timer</p>
+    <div className="h-screen w-screen flex flex-col gap-4 p-5 select-none">
+      <div className="flex items-center gap-3">
+        <BrandMark size={36} />
+        <div>
+          <h1 className="h h2">Início Rápido</h1>
+          <p className="mut m-0 text-[13px]">Escolha uma categoria para iniciar</p>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto flex flex-col gap-1.5">
+      <div className="list flex-1 overflow-y-auto">
         <button
+          type="button"
+          className="item text-left cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => handleStart(null)}
           disabled={loadingId !== null}
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-left text-sm text-muted-foreground",
-            "hover:border-primary/50 hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-          )}
         >
-          <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0">
-            <Tag size={13} />
-          </span>
-          {loadingId === "none" ? "Iniciando..." : "Sem categoria"}
+          <span className="dot" style={{ background: "#94a3b8", width: 14, height: 14 }} />
+          <span className="grow t mut">{loadingId === "none" ? "Iniciando..." : "Sem categoria"}</span>
         </button>
 
         {categories.map((category) => {
@@ -157,26 +155,21 @@ export default function QuickStartPopup() {
           return (
             <button
               key={category.id}
+              type="button"
+              className="item text-left cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ color: "var(--ink)" }}
               onClick={() => handleStart(id)}
               disabled={loadingId !== null}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-left text-sm",
-                "hover:border-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-              )}
             >
-              <span
-                className="w-6 h-6 rounded-full flex items-center justify-center text-primary-foreground shrink-0"
-                style={{ backgroundColor: category.color }}
-              >
-                <Icon size={13} />
-              </span>
-              {loadingId === id ? "Iniciando..." : category.name}
+              <span className="dot" style={{ background: category.color, width: 14, height: 14 }} />
+              <span className="grow t">{loadingId === id ? "Iniciando..." : category.name}</span>
+              <Icon size={18} strokeWidth={1.8} style={{ color: category.color }} />
             </button>
           );
         })}
       </div>
 
-      {error && <p className="text-xs text-destructive mt-3">{error}</p>}
+      {error && <p className="m-0 text-xs" style={{ color: "var(--danger)" }}>{error}</p>}
     </div>
   );
 }

@@ -1,9 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { TrendingUp, Clock } from "lucide-react";
 import { getDashboardChart, ChartData } from "@/lib/dashboard";
 
 type Period = "day" | "week" | "month";
@@ -26,8 +21,8 @@ function getDateForPeriod(period: Period): string {
 
 function formatTotal(minutes: number): string {
   const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return `${h}h ${m}min`;
+  const m = Math.round(minutes % 60);
+  return `${h}h ${String(m).padStart(2, "0")}min`;
 }
 
 const Stats = () => {
@@ -77,153 +72,72 @@ const Stats = () => {
   const maxMinutes = Math.max(...categories.map((c) => c.minutes), 1);
 
   return (
-    <div className="p-8 max-w-5xl w-full mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-8"
-      >
-        <h1 className="text-2xl font-bold text-foreground">Estatísticas</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Veja como você está gastando seu tempo
-        </p>
-      </motion.div>
-
-      {/* Period Selector */}
-      <div className="flex items-center gap-1 p-1 bg-muted rounded-lg w-fit mb-6">
-        {(["day", "week", "month"] as Period[]).map((p) => (
-          <Button
-            key={p}
-            size="sm"
-            variant={period === p ? "default" : "ghost"}
-            className="h-8 px-4 text-xs rounded-md"
-            onClick={() => setPeriod(p)}
-          >
-            {p === "day" ? "Dia" : p === "week" ? "Semana" : "Mês"}
-          </Button>
-        ))}
+    <section className="screen" aria-label="Estatísticas">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <h1 className="h h1">Estatísticas</h1>
+        <div className="seg" role="group" aria-label="Período">
+          {(["day", "week", "month"] as Period[]).map((p) => (
+            <button key={p} type="button" className={period === p ? "on" : ""} onClick={() => setPeriod(p)}>
+              {p === "day" ? "Dia" : p === "week" ? "Semana" : "Mês"}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Total Time Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1 }}
-        className="mb-6"
-      >
-        <Card className="border-border/60">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <TrendingUp size={18} className="text-primary" />
-              </div>
-              <span className="text-muted-foreground text-sm">
-                Tempo total foco
-              </span>
-            </div>
-            <p
-              className={`timer-display text-5xl font-bold text-primary timer-glow transition-opacity ${
-                isLoading ? "opacity-40 animate-pulse" : "opacity-100"
-              }`}
-            >
-              {formatTotal(totalMinutes)}
-            </p>
-          </CardContent>
-        </Card>
-      </motion.div>
+      <div className="two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))" }}>
+        <div className="card metric" style={{ alignSelf: "start" }}>
+          <div className="bubble" aria-hidden="true" />
+          <div className="eyebrow">Tempo total foco</div>
+          <div
+            className={`v transition-opacity ${isLoading ? "opacity-40 animate-pulse" : "opacity-100"}`}
+            style={{ fontSize: 52 }}
+          >
+            {formatTotal(totalMinutes)}
+          </div>
+        </div>
 
-      {/* Category Breakdown */}
-      <Card className="border-border/60">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+        <div className="card alt">
+          <h2 className="h h2" style={{ marginBottom: 18 }}>
             Por categoria
-          </CardTitle>
-        </CardHeader>
-        <Separator />
-        <CardContent className="p-4 space-y-4">
-          {isLoading ? (
-            <div className="space-y-4">
+          </h2>
+          {isLoading && categories.length === 0 ? (
+            <div className="list animate-pulse" style={{ gap: 18 }}>
               {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="p-4 bg-muted/30 rounded-xl animate-pulse"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-muted" />
-                      <div className="w-20 h-4 rounded bg-muted" />
-                    </div>
-                    <div className="w-10 h-4 rounded bg-muted" />
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full" />
+                <div key={i}>
+                  <div className="mb-2 h-4 w-24 rounded-full" style={{ background: "var(--surf2)" }} />
+                  <div className="bar" />
                 </div>
               ))}
             </div>
           ) : error ? (
-            <p className="text-sm text-destructive py-4 text-center">{error}</p>
+            <p style={{ textAlign: "center", margin: 0, padding: "24px 0", color: "var(--danger)" }}>{error}</p>
           ) : categories.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 gap-3">
-              <Clock size={32} className="text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                Nenhum dado disponível para este período
-              </p>
-            </div>
+            <p className="mut" style={{ textAlign: "center", margin: 0, padding: "40px 0" }}>
+              Nenhum dado disponível para este período
+            </p>
           ) : (
-            categories.map((cat, index) => {
-              const percentage = (cat.minutes / maxMinutes) * 100;
-              const hours = (cat.minutes / 60).toFixed(1);
-
-              return (
-                <motion.div
-                  key={cat.name}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + index * 0.08 }}
-                  className="p-4 bg-muted/30 rounded-xl"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: cat.color + "26" }}
-                      >
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: cat.color }}
-                        />
-                      </div>
-                      <span className="font-medium text-sm text-foreground">
-                        {cat.name}
-                      </span>
-                    </div>
-                    <span
-                      className="timer-display text-sm font-bold"
-                      style={{ color: cat.color }}
-                    >
-                      {hours}h
+            <div className="list" style={{ gap: 18 }}>
+              {categories.map((cat) => (
+                <div key={cat.name}>
+                  <div className="row" style={{ justifyContent: "space-between", marginBottom: 6, gap: 8 }}>
+                    <span style={{ fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 8 }}>
+                      <span className="dot" style={{ background: cat.color }} />
+                      {cat.name}
+                    </span>
+                    <span className="mut" style={{ fontWeight: 600 }}>
+                      {(cat.minutes / 60).toFixed(1).replace(".", ",")}h
                     </span>
                   </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ backgroundColor: cat.color }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${percentage}%` }}
-                      transition={{
-                        delay: 0.4 + index * 0.08,
-                        duration: 0.6,
-                        ease: "easeOut",
-                      }}
-                    />
+                  <div className="bar">
+                    <i style={{ width: `${(cat.minutes / maxMinutes) * 100}%`, background: cat.color }} />
                   </div>
-                </motion.div>
-              );
-            })
+                </div>
+              ))}
+            </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </section>
   );
 };
 

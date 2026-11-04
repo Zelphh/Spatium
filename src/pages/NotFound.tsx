@@ -1,8 +1,9 @@
-import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error(
@@ -12,16 +13,30 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">
-          Oops! Page not found
-        </p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
-      </div>
+    <div className="shell">
+      <main className="main">
+        <section
+          className="screen"
+          aria-label="Página não encontrada"
+          style={{ minHeight: "70vh", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 20 }}
+        >
+          <div style={{ position: "relative", width: "min(320px, 80vw)", aspectRatio: "1", display: "grid", placeItems: "center" }}>
+            <div className="blob-404" aria-hidden="true" />
+            <div className="h" style={{ fontSize: "clamp(84px, 22vw, 132px)", fontWeight: 400, position: "relative" }}>
+              404
+            </div>
+          </div>
+          <h1 className="h h2" style={{ fontSize: 28 }}>
+            Esse espaço está vazio
+          </h1>
+          <p className="mut" style={{ margin: 0, maxWidth: 360 }}>
+            A página que você procura não existe ou mudou de lugar.
+          </p>
+          <button type="button" className="btn" onClick={() => navigate("/")}>
+            Voltar para a Home
+          </button>
+        </section>
+      </main>
     </div>
   );
 };

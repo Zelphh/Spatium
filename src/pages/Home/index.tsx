@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Clock, TrendingUp, Target } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QuickStartCard } from "./QuickStartCard";
 import { RecentHistoryCard } from "./RecentHistoryCard";
 import { getDashboardData, getDashboardChart, type ChartData, type DashboardDataResponse } from "@/lib/dashboard";
 import { DashboardAreaChart } from "@/components/charts/DashboardAreaChart";
 import { ChartPeriodPicker, getDefaultDate, type Period } from "./ChartPeriodPicker";
+import { formatHours } from "@/lib/format";
+import { categoryTint } from "@/lib/utils";
 
 const HomePage = () => {
   const [dashboardData, setDashboardData] = useState<DashboardDataResponse | null>(null);
@@ -70,154 +69,71 @@ const HomePage = () => {
     setChartDate(d);
   };
 
-  const todayStats = {
-    hours: dashboardData?.today_hours ?? 0,
-    label: "Hoje",
-    icon: Clock,
-    colorVar: "--category-work",
-  };
+  const metrics = [
+    { label: "Hoje", hours: dashboardData?.today_hours ?? 0, alt: false },
+    { label: "Esta semana", hours: dashboardData?.week_hours ?? 0, alt: true },
+    { label: "Média diária", hours: dashboardData?.daily_avg_hours ?? 0, alt: false },
+  ];
 
-  const weekStats = {
-    hours: dashboardData?.week_hours ?? 0,
-    label: "Esta Semana",
-    icon: TrendingUp,
-    colorVar: "--category-study",
-  };
-
-  const dailyAvg = {
-    hours: dashboardData?.daily_avg_hours ?? 0,
-    label: "Média Diária",
-    icon: Target,
-    colorVar: "--category-custom",
-  };
+  const hasChartData = !!chartData && chartData.series.length > 0;
 
   return (
-    <div className="p-8 max-w-6xl mx-auto w-full">
-        {/* Header */}
-        <motion.div
-          className="mb-8"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Bem-vindo ao Spatium — Gerencie seu tempo de forma eficiente
-          </p>
-        </motion.div>
-
-        {/* Stats Row */}
-        <motion.div
-          className="mb-8 overflow-x-auto pb-2 md:overflow-visible md:pb-0 scrollbar-custom"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <div className="flex min-w-max flex-nowrap gap-4 md:min-w-0 md:w-full">
-            {[todayStats, weekStats, dailyAvg].map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <Card
-                  key={stat.label}
-                  className="border-border/60 overflow-hidden relative w-[220px] shrink-0 md:min-w-0 md:w-auto md:flex-1 md:shrink"
-                >
-                  <div
-                    className="absolute inset-0 opacity-10"
-                    style={{ background: `hsl(var(${stat.colorVar}))` }}
-                  />
-                  <CardContent className="p-5 relative h-full flex flex-col">
-                    <div className="flex items-start gap-2 mb-3 min-h-[2.75rem]">
-                      <Icon
-                        size={15}
-                        style={{ color: `hsl(var(${stat.colorVar}))` }}
-                      />
-                      <span className="text-sm text-muted-foreground font-medium leading-tight">
-                        {stat.label}
-                      </span>
-                    </div>
-                    <p
-                      className="timer-display text-4xl font-bold"
-                      style={{ color: `hsl(var(${stat.colorVar}))` }}
-                    >
-                      {stat.hours.toFixed(1)}h
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Area Chart */}
-        {chartData && chartData.series.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="mb-6"
-          >
-            <Card className="border-border/60">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                    Minutos de foco
-                  </CardTitle>
-                  <ChartPeriodPicker
-                    period={chartPeriod}
-                    date={chartDate}
-                    onChange={handlePeriodChange}
-                  />
-                </div>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <DashboardAreaChart data={chartData} />
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="mb-8"
-          >
-            <Card className="border-border/60">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                    Minutos de foco
-                  </CardTitle>
-                  <ChartPeriodPicker
-                    period={chartPeriod}
-                    date={chartDate}
-                    onChange={handlePeriodChange}
-                  />
-                </div>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <div className="flex flex-col items-center justify-center py-10 gap-3">
-                  <Clock size={32} className="text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Nenhum dado disponível para este período
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Two-column: Timer shortcut + Recent History */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <QuickStartCard />
-
-          <RecentHistoryCard
-            sessions={dashboardData?.recent_sessions ?? []}
-            totalSeconds={dashboardData?.recent_total_secs ?? 0}
-            isLoading={isLoading}
-            error={error}
-          />
-        </div>
+    <section className="screen" aria-label="Home">
+      <div>
+        <div className="eyebrow">Resumo do foco</div>
+        <h1 className="h h1">Seu tempo, em fluxo</h1>
       </div>
+
+      <div className="g3">
+        {metrics.map((metric) => (
+          <div key={metric.label} className={metric.alt ? "card metric alt" : "card metric"}>
+            <div className="bubble" aria-hidden="true" />
+            <div className="eyebrow">{metric.label}</div>
+            <div className="v">{formatHours(metric.hours)}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="two">
+        <div className="card">
+          <div className="row" style={{ justifyContent: "space-between", marginBottom: 14 }}>
+            <h2 className="h h2">Minutos de foco</h2>
+            <ChartPeriodPicker period={chartPeriod} date={chartDate} onChange={handlePeriodChange} />
+          </div>
+
+          {hasChartData ? (
+            <>
+              <div className="scroll">
+                <div style={{ minWidth: 420 }}>
+                  <DashboardAreaChart data={chartData} />
+                </div>
+              </div>
+              <div className="row" style={{ gap: 8, marginTop: 12 }}>
+                {chartData.series.map((serie) => (
+                  <span key={serie.name} className="badge" style={categoryTint(serie.color)}>
+                    <span className="dot" style={{ background: serie.color }} />
+                    {serie.name}
+                  </span>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="mut" style={{ textAlign: "center", padding: "60px 0", margin: 0 }}>
+              Nenhum dado disponível para este período
+            </p>
+          )}
+        </div>
+
+        <QuickStartCard />
+      </div>
+
+      <RecentHistoryCard
+        sessions={dashboardData?.recent_sessions ?? []}
+        totalSeconds={dashboardData?.recent_total_secs ?? 0}
+        isLoading={isLoading}
+        error={error}
+      />
+    </section>
   );
 };
 

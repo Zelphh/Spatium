@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AccentProvider } from "@/contexts/AccentContext";
 import { TimerProvider } from "@/contexts/TimerContext";
+import { SessionProvider } from "@/contexts/SessionContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import HomePage from "./pages/Home";
 import Index from "./pages/Timer/Index";
@@ -18,28 +19,30 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <TimerProvider>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-        <AccentProvider>
-          <TooltipProvider>
-            <Toaster />
-            <NotificationManager />
-            <BrowserRouter>
-              <Routes>
-                <Route element={<AppLayout />}>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/timer" element={<Index />} />
-                  <Route path="/history" element={<History />} />
-                  <Route path="/stats" element={<Stats />} />
-                  <Route path="/settings" element={<Settings />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AccentProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <AccentProvider>
+            <TooltipProvider>
+              <Toaster />
+              <NotificationManager />
+              <BrowserRouter>
+                <Routes>
+                  <Route element={<AppLayout />}>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/timer" element={<Index />} />
+                    <Route path="/history" element={<History />} />
+                    <Route path="/stats" element={<Stats />} />
+                    <Route path="/settings" element={<Settings />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </AccentProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </SessionProvider>
   </TimerProvider>
 );
 

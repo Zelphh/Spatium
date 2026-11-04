@@ -1,37 +1,33 @@
-import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { CategoryChip } from "@/components/timer/CategoryChip";
+import { useTimer } from "@/hooks/useTimer";
+import { useSession } from "@/contexts/SessionContext";
+import { formatDuration } from "@/lib/timer";
 
-export const QuickStartCard = () => (
-  <motion.div
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.4, delay: 0.2 }}
-  >
-    <Card className="border-border/60 h-full overflow-hidden flex flex-col">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold">Início Rápido</CardTitle>
-      </CardHeader>
-      <Separator />
-      <CardContent className="flex-1 flex flex-col items-center justify-center gap-6 pt-0">
-        <div className="text-center">
-          <p className="timer-display text-5xl font-bold text-primary timer-glow mt-4">
-            00:00:00
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">Pronto para iniciar</p>
-        </div>
+export const QuickStartCard = () => {
+  const navigate = useNavigate();
+  const timer = useTimer();
+  const { selectedCategory } = useSession();
 
-        <a
-          href="/timer"
-          className="gradient-primary text-white rounded-lg px-8 py-3 text-sm font-semibold
-            flex items-center gap-2 hover:opacity-90 transition-opacity shadow-lg"
+  return (
+    <div className="card alt" style={{ display: "flex", flexDirection: "column", gap: 18, justifyContent: "space-between" }}>
+      <div>
+        <div className="eyebrow">Início Rápido</div>
+        <div
+          className="h tabular"
+          style={{ fontSize: "clamp(44px, 7vw, 60px)", marginTop: 14, letterSpacing: "-0.04em" }}
         >
-          <Clock size={16} />
-          Abrir Timer
-        </a>
-      </CardContent>
-    </Card>
-  </motion.div>
-);
+          {formatDuration(timer.elapsedTime)}
+        </div>
+        <div className="row" style={{ marginTop: 10 }}>
+          <CategoryChip category={selectedCategory} />
+        </div>
+      </div>
+      <button type="button" className="btn" onClick={() => navigate("/timer")}>
+        Abrir Timer
+        <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+      </button>
+    </div>
+  );
+};

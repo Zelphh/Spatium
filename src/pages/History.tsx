@@ -1,34 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar, Clock } from "lucide-react";
+import { useTheme } from "next-themes";
 import { type SessionListItem } from "@/lib/dashboard";
-import { formatDuration, getCategories } from "@/lib/timer";
+import { getCategories } from "@/lib/timer";
 import { getHistoryData } from "@/lib/history";
+import { formatSecondsShort, formatSessionWhen, sessionTitle } from "@/lib/format";
+import { cn, categoryTint } from "@/lib/utils";
 import { type Category } from "@/pages/type";
-
-const formatDate = (createdAt: string) => {
-  const date = new Date(createdAt);
-
-  if (Number.isNaN(date.getTime())) {
-    return { date: createdAt, time: "--:--" };
-  }
-
-  return {
-    date: date.toLocaleDateString("pt-BR"),
-    time: date.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  };
-};
 
 type SortOrder = "desc" | "asc";
 
 const History = () => {
+  const { theme } = useTheme();
+  const colorScheme = theme === "light" ? "light" : "dark";
   const [sessions, setSessions] = useState<SessionListItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -94,213 +77,121 @@ const History = () => {
     [filteredSessions],
   );
 
-  const enrichedSessions = useMemo(
-    () =>
-      filteredSessions.map((session) => {
-        const formattedDate = formatDate(session.created_at);
-        return {
-          ...session,
-          duration: formatDuration(session.duration_secs),
-          date: formattedDate.date,
-          time: formattedDate.time,
-        };
-      }),
-    [filteredSessions],
-  );
-
   const hasDateFilter = startDate !== "" || endDate !== "";
   const hasActiveFilter =
     hasDateFilter || selectedCategories.length > 0;
 
   return (
-    <div className="p-8 max-w-5xl w-full mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-8"
-      >
-        <h1 className="text-2xl font-bold text-foreground">Histórico</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Suas sessões de foco
-        </p>
-      </motion.div>
+    <section className="screen" aria-label="Histórico">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <h1 className="h h1">Histórico</h1>
+        <span className="chip" style={{ fontSize: 15 }}>
+          Total filtrado · <b>{formatSecondsShort(totalSeconds)}</b>
+        </span>
+      </div>
 
-      <Card className="border-border/60">
-        <CardHeader className="flex-row items-center justify-between pb-3">
-          <CardTitle className="text-base font-semibold">Sessões</CardTitle>
-          <span className="text-xs text-muted-foreground timer-display">
-            Total:{" "}
-            <span className="text-primary">{formatDuration(totalSeconds)}</span>
-          </span>
-        </CardHeader>
-        <Separator />
-        <CardContent className="p-6">
-          {/* Filters row */}
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">De</span>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="h-7 px-2 text-xs rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Até</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="h-7 px-2 text-xs rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-              />
-            </div>
-            {hasActiveFilter && (
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-7 px-2 text-xs text-muted-foreground"
-                onClick={() => {
-                  setStartDate("");
-                  setEndDate("");
-                  setSelectedCategories([]);
-                }}
-              >
-                Limpar filtros
-              </Button>
-            )}
-            <div className="flex items-center gap-1 p-1 bg-muted rounded-lg ml-auto">
-              <Button
-                size="sm"
-                variant={sortOrder === "desc" ? "default" : "ghost"}
-                className="h-8 px-4 text-xs rounded-md"
-                onClick={() => setSortOrder("desc")}
-              >
-                Mais recente
-              </Button>
-              <Button
-                size="sm"
-                variant={sortOrder === "asc" ? "default" : "ghost"}
-                className="h-8 px-4 text-xs rounded-md"
-                onClick={() => setSortOrder("asc")}
-              >
-                Mais antigo
-              </Button>
-            </div>
-          </div>
-
-          {/* Category filter badges */}
-          {categories.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 mb-5">
-              {categories.map((cat) => {
-                const active = selectedCategories.includes(cat.name);
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => toggleCategory(cat.name)}
-                    className="rounded-full px-3 py-0.5 text-xs font-medium transition-opacity focus:outline-none"
-                    style={{
-                      backgroundColor: active
-                        ? `${cat.color}30`
-                        : `${cat.color}12`,
-                      color: cat.color,
-                      outline: active ? `1.5px solid ${cat.color}60` : "none",
-                      opacity: selectedCategories.length === 0 || active ? 1 : 0.45,
-                    }}
-                  >
-                    {cat.name}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground text-center py-16">
-              Carregando histórico...
-            </p>
-          ) : error ? (
-            <p className="text-sm text-destructive text-center py-16">
-              {error}
-            </p>
-          ) : enrichedSessions.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-col items-center justify-center py-16 gap-3"
+      <div className="card alt" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="row" style={{ alignItems: "flex-end" }}>
+          <label className="lab">
+            De
+            <input
+              className="input"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={{ width: "auto", colorScheme }}
+            />
+          </label>
+          <label className="lab">
+            Até
+            <input
+              className="input"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={{ width: "auto", colorScheme }}
+            />
+          </label>
+          {hasActiveFilter && (
+            <button
+              type="button"
+              className="btn ghost"
+              onClick={() => {
+                setStartDate("");
+                setEndDate("");
+                setSelectedCategories([]);
+              }}
             >
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                <Clock size={28} className="text-muted-foreground" />
-              </div>
-              <p className="text-muted-foreground text-sm text-center">
-                {hasActiveFilter
-                  ? "Nenhuma sessão encontrada para os filtros selecionados"
-                  : "Nenhuma entrada de tempo registrada"}
-              </p>
-              {!hasActiveFilter && (
-                <p className="text-muted-foreground/60 text-xs text-center">
-                  As sessões serão salvas aqui quando você completar um timer
-                </p>
-              )}
-            </motion.div>
-          ) : (
-            <div className="space-y-2">
-              {enrichedSessions.map((session, index) => (
-                <motion.div
-                  key={session.id}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center justify-between p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clock size={17} className="text-primary" />
-                    </div>
-                    <div>
-                      <p
-                        className={`font-medium text-sm ${
-                          session.description && session.description !== "-"
-                            ? "text-foreground"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {session.description && session.description !== "-"
-                          ? session.description
-                          : "Sessão sem descrição"}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge
-                          variant="secondary"
-                          className="text-xs h-5 px-1.5 border-0"
-                          style={{
-                            backgroundColor: `${session.category_color}25`,
-                            color: session.category_color,
-                          }}
-                        >
-                          {session.category}
-                        </Badge>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Calendar size={11} />
-                          <span>
-                            {session.date} às {session.time}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <span className="timer-display text-base font-bold text-primary shrink-0 ml-4">
-                    {session.duration}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
+              Limpar filtros
+            </button>
           )}
-        </CardContent>
-      </Card>
-    </div>
+          <div className="seg" role="group" aria-label="Ordenação" style={{ marginLeft: "auto" }}>
+            <button type="button" className={sortOrder === "desc" ? "on" : ""} onClick={() => setSortOrder("desc")}>
+              Mais recente
+            </button>
+            <button type="button" className={sortOrder === "asc" ? "on" : ""} onClick={() => setSortOrder("asc")}>
+              Mais antigo
+            </button>
+          </div>
+        </div>
+
+        {categories.length > 0 && (
+          <div className="row" style={{ gap: 8 }} role="group" aria-label="Filtrar por categoria">
+            {categories.map((cat) => {
+              const active = selectedCategories.includes(cat.name);
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  className={cn("chip", active && "sel")}
+                  style={categoryTint(cat.color)}
+                  aria-pressed={active}
+                  onClick={() => toggleCategory(cat.name)}
+                >
+                  <span className="dot" style={{ background: cat.color }} />
+                  {cat.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="list">
+        {isLoading ? (
+          <p className="mut" style={{ textAlign: "center", padding: "48px 0", margin: 0 }}>
+            Carregando histórico...
+          </p>
+        ) : error ? (
+          <p style={{ textAlign: "center", padding: "48px 0", margin: 0, color: "var(--danger)" }}>{error}</p>
+        ) : filteredSessions.length === 0 ? (
+          <p className="mut" style={{ textAlign: "center", padding: "48px 0", margin: 0 }}>
+            {hasActiveFilter
+              ? "Nenhuma sessão encontrada com esses filtros"
+              : "Nenhuma entrada de tempo registrada. As sessões aparecem aqui quando você completa um timer."}
+          </p>
+        ) : (
+          filteredSessions.map((session) => (
+            <div key={session.id} className="item" style={{ flexWrap: "wrap" }}>
+              <span className="dot" style={{ background: session.category_color, width: 14, height: 14 }} />
+              <div className="grow" style={{ minWidth: 180 }}>
+                <div className="t" style={{ whiteSpace: "normal" }}>
+                  {sessionTitle(session.description)}
+                </div>
+                <div className="s">{formatSessionWhen(session.created_at, true)}</div>
+              </div>
+              <span className="badge" style={categoryTint(session.category_color)}>
+                <span className="dot" style={{ background: session.category_color }} />
+                {session.category}
+              </span>
+              <b style={{ whiteSpace: "nowrap", minWidth: 72, textAlign: "right" }}>
+                {formatSecondsShort(session.duration_secs)}
+              </b>
+            </div>
+          ))
+        )}
+      </div>
+    </section>
   );
 };
 

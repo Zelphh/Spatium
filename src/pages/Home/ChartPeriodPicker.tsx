@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 export type Period = "day" | "week" | "month";
 
@@ -18,7 +18,7 @@ export function getDefaultDate(period: Period): string {
   return now.toISOString().slice(0, 7);
 }
 
-const PERIOD_LABELS: Record<Period, string> = {
+export const PERIOD_LABELS: Record<Period, string> = {
   day: "Dia",
   week: "Semana",
   month: "Mês",
@@ -30,6 +30,12 @@ const INPUT_TYPES: Record<Period, string> = {
   month: "month",
 };
 
+const INPUT_LABELS: Record<Period, string> = {
+  day: "Data de referência",
+  week: "Semana de referência",
+  month: "Mês de referência",
+};
+
 interface ChartPeriodPickerProps {
   period: Period;
   date: string;
@@ -37,27 +43,30 @@ interface ChartPeriodPickerProps {
 }
 
 export function ChartPeriodPicker({ period, date, onChange }: ChartPeriodPickerProps) {
+  const { theme } = useTheme();
+
   return (
-    <div className="flex items-center gap-2">
-      <input
-        type={INPUT_TYPES[period]}
-        value={date}
-        onChange={(e) => onChange(period, e.target.value)}
-        className="h-7 px-2 text-xs rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-      />
-      <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
+    <div className="row">
+      <div className="seg" role="group" aria-label="Período do gráfico">
         {(["day", "week", "month"] as Period[]).map((p) => (
-          <Button
+          <button
             key={p}
-            size="sm"
-            variant={period === p ? "default" : "ghost"}
-            className="h-7 px-3 text-xs rounded-md"
+            type="button"
+            className={period === p ? "on" : ""}
             onClick={() => onChange(p, getDefaultDate(p))}
           >
             {PERIOD_LABELS[p]}
-          </Button>
+          </button>
         ))}
       </div>
+      <input
+        className="input"
+        type={INPUT_TYPES[period]}
+        aria-label={INPUT_LABELS[period]}
+        value={date}
+        onChange={(e) => onChange(period, e.target.value)}
+        style={{ width: "auto", colorScheme: theme === "light" ? "light" : "dark" }}
+      />
     </div>
   );
 }

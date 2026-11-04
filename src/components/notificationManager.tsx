@@ -13,7 +13,7 @@ export type NotificationOptions = {
 };
 
 const DEFAULT_DURATION = 4000;
-const DEFAULT_BORDER_COLOR = "hsl(var(--primary))";
+const DEFAULT_BORDER_COLOR = "var(--ac)";
 
 export function notify({
   message,
@@ -24,10 +24,9 @@ export function notify({
   return toast(title ?? message, {
     description: title ? message : undefined,
     duration,
-    className: "w-[360px] max-w-[calc(100vw-2rem)] border-l-4",
-    style: {
-      borderLeftColor: borderColor,
-    },
+    unstyled: true,
+    className: "sp-toast",
+    icon: <span className="dot" style={{ background: borderColor, width: 12, height: 12 }} />,
   });
 }
 
@@ -51,19 +50,8 @@ const NotificationManager = ({ ...props }: NotificationManagerProps) => {
   return (
     <Sonner
       theme={theme as NotificationManagerProps["theme"]}
-      position="top-right"
-      className="notification-manager group"
-      toastOptions={{
-        classNames: {
-          toast:
-            "group toast group-[.notification-manager]:bg-background group-[.notification-manager]:text-foreground group-[.notification-manager]:border-border group-[.notification-manager]:shadow-lg",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton:
-            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-        },
-      }}
+      position="bottom-center"
+      className="notification-manager"
       {...props}
     />
   );

@@ -2,19 +2,23 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 export type AccentColor = 'violet' | 'cyan' | 'rose' | 'amber' | 'emerald' | 'blue';
 
-interface AccentColors {
-  h: number;
-  s: number;
-  l: number;
+interface AccentDefinition {
+  label: string;
+  /** Gradiente [início, fim] usado no tema claro */
+  light: [string, string];
+  /** Gradiente [início, fim] usado no tema escuro */
+  dark: [string, string];
 }
 
-const accentMap: Record<AccentColor, AccentColors> = {
-  violet: { h: 263, s: 70, l: 60 },
-  cyan: { h: 188, s: 85, l: 45 },
-  rose: { h: 340, s: 80, l: 58 },
-  amber: { h: 35, s: 90, l: 52 },
-  emerald: { h: 158, s: 65, l: 45 },
-  blue: { h: 217, s: 80, l: 58 },
+// Os valores efetivos ficam em assets/theme.css (seletores [data-accent]); este mapa serve
+// para pré-visualizar as cores na tela de configurações.
+const accentMap: Record<AccentColor, AccentDefinition> = {
+  violet: { label: 'Violeta', light: ['#6d3fe0', '#a21caf'], dark: ['#a78bfa', '#e879f9'] },
+  cyan: { label: 'Ciano', light: ['#0e7490', '#1d4ed8'], dark: ['#22d3ee', '#60a5fa'] },
+  rose: { label: 'Rosa', light: ['#be185d', '#b45309'], dark: ['#f472b6', '#fbbf24'] },
+  amber: { label: 'Âmbar', light: ['#b45309', '#be185d'], dark: ['#fbbf24', '#fb7185'] },
+  emerald: { label: 'Esmeralda', light: ['#047857', '#0e7490'], dark: ['#34d399', '#22d3ee'] },
+  blue: { label: 'Azul', light: ['#1d4ed8', '#6d3fe0'], dark: ['#60a5fa', '#a78bfa'] },
 };
 
 interface AccentContextValue {
@@ -29,7 +33,8 @@ const AccentContext = createContext<AccentContextValue>({
 
 export function AccentProvider({ children }: { children: ReactNode }) {
   const [accent, setAccentState] = useState<AccentColor>(() => {
-    return (localStorage.getItem('spatium-accent') as AccentColor) || 'violet';
+    const stored = localStorage.getItem('spatium-accent') as AccentColor | null;
+    return stored && stored in accentMap ? stored : 'violet';
   });
 
   const setAccent = (a: AccentColor) => {
@@ -38,9 +43,7 @@ export function AccentProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { h, s, l } = accentMap[accent];
-    const root = document.documentElement;
-    root.style.setProperty('--primary', `${h} ${s}% ${l}%`);
+    document.documentElement.dataset.accent = accent;
   }, [accent]);
 
   return <AccentContext.Provider value={{ accent, setAccent }}>{children}</AccentContext.Provider>;

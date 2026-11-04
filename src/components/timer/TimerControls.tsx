@@ -1,69 +1,48 @@
-import { motion } from "framer-motion";
-import { Play, Pause, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Play, Pause, RotateCcw, Square } from "lucide-react";
 
 interface TimerControlsProps {
   isRunning: boolean;
-  onToggle: () => void | Promise<void>;
-  onReset: () => void | Promise<void>;
-  onStop: () => void | Promise<void>;
-  canStart: boolean;
+  onToggle: () => void;
+  onReset: () => void;
+  onStop: () => void;
+  /** Versão compacta do modo mini: botão de encerrar redondo à esquerda. */
+  compact?: boolean;
 }
 
-export function TimerControls({
-  isRunning,
-  onToggle,
-  onReset,
-  onStop,
-  canStart,
-}: TimerControlsProps) {
-  return (
-    <div className="flex items-center gap-4">
-      {/* Reset button */}
-      <motion.div whileHover={{ scale: 0.95 }} whileTap={{ scale: 0.95 }}>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onReset}
-          className="w-12 h-12 rounded-full border-border border-primary/30"
-        >
-          <RotateCcw size={18} />
-        </Button>
-      </motion.div>
+export function TimerControls({ isRunning, onToggle, onReset, onStop, compact }: TimerControlsProps) {
+  const playLabel = isRunning ? "Pausar" : "Iniciar";
+  const PlayIcon = isRunning ? Pause : Play;
 
-      {/* Main play/pause button */}
-      <motion.div
-        whileHover={canStart ? { scale: 0.95 } : undefined}
-        whileTap={canStart ? { scale: 0.95 } : undefined}
-      >
-        <Button
-          onClick={onToggle}
-          disabled={!canStart}
-          className="gradient-primary text-white h-11 px-8 rounded-xl text-sm font-semibold
-            shadow-lg shadow-primary/30 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <motion.div
-            key={isRunning ? "pause" : "play"}
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.15 }}
-          >
-            {isRunning ? <Pause size={18} /> : <Play size={18} />}
-          </motion.div>
-          {isRunning ? "Pausar" : "Iniciar"}
-        </Button>
-      </motion.div>
-      <div className="flex items-center gap-3">
-        <motion.div whileHover={{ scale: 0.95 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            variant="outline"
-            onClick={onStop}
-            className="h-11 px-5 rounded-xl text-sm font-semibold border-primary/30 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
-          >
-            Encerrar
-          </Button>
-        </motion.div>
+  const resetButton = (
+    <button type="button" className="round" aria-label="Resetar" onClick={onReset}>
+      <RotateCcw className="ico" strokeWidth={1.8} aria-hidden="true" />
+    </button>
+  );
+  const playButton = (
+    <button type="button" className="round big" aria-label={playLabel} onClick={onToggle}>
+      <PlayIcon className="ico" fill="currentColor" strokeWidth={0} aria-hidden="true" />
+    </button>
+  );
+
+  if (compact) {
+    return (
+      <div className="row" style={{ gap: 14 }}>
+        <button type="button" className="round" aria-label="Encerrar sessão" onClick={onStop}>
+          <Square className="ico" fill="currentColor" strokeWidth={0} aria-hidden="true" />
+        </button>
+        {playButton}
+        {resetButton}
       </div>
+    );
+  }
+
+  return (
+    <div className="row" style={{ gap: 16, justifyContent: "center" }}>
+      {resetButton}
+      {playButton}
+      <button type="button" className="btn ghost" onClick={onStop}>
+        Encerrar
+      </button>
     </div>
   );
 }

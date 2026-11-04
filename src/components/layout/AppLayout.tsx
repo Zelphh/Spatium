@@ -1,47 +1,61 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { Sidebar } from "./Sidebar";
-import { cn } from "@/lib/utils";
+import { Minimize2, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Dock } from "./Dock";
+import { MiniMode } from "./MiniMode";
 import { useMedia } from "@/hooks/useMedia";
+import { enterMiniWindow, exitMiniWindow } from "@/lib/window";
 
 export function AppLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [dockOpen, setDockOpen] = useState(true);
+  const [mini, setMini] = useState(false);
   const isSmallScreen = useMedia("(max-width: 780px)");
+  const { theme, setTheme } = useTheme();
+  const isDark = theme !== "light";
 
   useEffect(() => {
-    setSidebarOpen(!isSmallScreen);
+    setDockOpen(!isSmallScreen);
   }, [isSmallScreen]);
 
+  const goMini = () => {
+    setMini(true);
+    void enterMiniWindow();
+  };
+
+  const outMini = () => {
+    setMini(false);
+    void exitMiniWindow();
+  };
+
+  if (mini) {
+    return <MiniMode onExpand={outMini} />;
+  }
+
   return (
-    <div className="min-h-screen flex bg-background">
-      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      {!sidebarOpen && (
-        <aside
-          className={cn(
-            "fixed left-0 top-0 h-full w-6 bg-card border-r border-border flex flex-col z-50 shadow-sm duration-200",
-          )}
-        >
+    <div className="shell">
+      <Dock isOpen={dockOpen} setIsOpen={setDockOpen} />
+
+      <main className="main">
+        <div className="topbar">
           <button
             type="button"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Abrir menu"
-            className={cn(
-              "fixed top-6 z-50 inline-flex h-10 w-9 items-center justify-center rounded-md bg-card text-foreground shadow-sm transition-all",
-              "border border-border border-l-0 border-t-0 border-b-0 rounded-full",
-            )}
+            className="round"
+            aria-label={isDark ? "Mudar para tema claro" : "Mudar para tema escuro"}
+            onClick={() => setTheme(isDark ? "light" : "dark")}
           >
-            <Menu size={18} />
+            {isDark ? (
+              <Sun className="ico" strokeWidth={1.8} aria-hidden="true" />
+            ) : (
+              <Moon className="ico" strokeWidth={1.8} aria-hidden="true" />
+            )}
           </button>
-        </aside>
-      )}
+          <button type="button" className="btn ghost" onClick={goMini}>
+            <Minimize2 size={18} strokeWidth={1.8} aria-hidden="true" />
+            Modo mini
+          </button>
+        </div>
 
-      <main
-        className={cn(
-          "flex-1 min-h-screen overflow-y-auto transition-[margin] duration-300",
-          !isSmallScreen && sidebarOpen ? "ml-60" : "ml-8",
-        )}
-      >
         <Outlet />
       </main>
     </div>

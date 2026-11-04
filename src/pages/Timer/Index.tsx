@@ -1,74 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { notify } from "@/components/notificationManager";
-import { ModeSelector } from "@/components/timer/ModeSelector";
-import { TimerCard } from "@/pages/Timer/TimerCard";
-import { CategorySelectorCard } from "@/pages/Timer/CategorySelectorCard";
-import { TaskDescriptionCard } from "@/pages/Timer/TaskDescriptionCard";
+import { useState } from "react";
+import { TimerOrb, MODE_LABELS } from "@/components/timer/TimerOrb";
+import { TimerControls } from "@/components/timer/TimerControls";
+import { CategoryChip } from "@/components/timer/CategoryChip";
+import { CategorySelector } from "@/components/timer/CategorySelector";
 import { CreateCategoryDialog } from "@/components/timer/CreateCategoryDialog";
 import { DeleteCategoryDialog } from "@/components/timer/DeleteCategoryDialog";
 import { useTimer } from "@/hooks/useTimer";
+import { useSession } from "@/contexts/SessionContext";
 import { TimerMode, Category } from "@/pages/type";
-import { changeCategory, changeDescription, changeNotes, getCategories } from "@/lib/timer";
+
+const MODES: TimerMode[] = ["standard", "pomodoro", "custom"];
 
 const Index = () => {
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null,
-  );
-  const [taskDescription, setTaskDescription] = useState("");
-  const [notes, setNotes] = useState("");
-  const hasNotifiedCompletionRef = useRef(false);
-  const cancelNotificationRef = useRef(false);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [addCategoryOpen, setAddCategoryOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
 
   const timer = useTimer();
-
-  useEffect(() => {
-    if (timer.mode !== "custom" || !timer.isCompleted) {
-      hasNotifiedCompletionRef.current = false;
-      cancelNotificationRef.current = false;
-      return;
-    }
-
-    if (!hasNotifiedCompletionRef.current && !cancelNotificationRef.current) {
-      notify({
-        title: "Timer finalizado",
-        message: "O tempo do modo personalizado chegou ao fim.",
-        borderColor: "hsl(var(--primary))",
-        duration: 4000,
-      });
-      hasNotifiedCompletionRef.current = true;
-    }
-  }, [timer.mode, timer.isCompleted]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const cats = await getCategories();
-      setCategories(cats);
-    };
-    fetchCategories();
-  }, []);
-
-  const handleReset = useCallback(() => {
-    cancelNotificationRef.current = true;
-    if (timer.sessionId !== null && timer.sessionId > 0) {
-      changeNotes({
-        session_id: timer.sessionId,
-        notes,
-      });
-      changeDescription({
-        session_id: timer.sessionId,
-        description: taskDescription,
-      });
-    }
-    timer.reset();
-    setTaskDescription("");
-    setSelectedCategory(null);
-    setNotes("");
-  }, [timer, notes, taskDescription]);
+  const session = useSession();
 
   const handleModeChange = (newMode: TimerMode) => {
     if (!timer.isRunning) {
@@ -77,70 +26,95 @@ const Index = () => {
     }
   };
 
-  const handleCategoryChange = (category: Category) => {
-    if (timer.sessionId !== null && timer.sessionId > 0) {
-      changeCategory({
-        session_id: timer.sessionId,
-        category_id: Number(category.id),
-      });
-    }
-    setSelectedCategory(category);
-  };
-
   return (
-    <div className="p-6 w-full mx-auto flex flex-col gap-4">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <h1 className="text-2xl font-bold text-foreground">Timer</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Inicie uma sessão de foco
-        </p>
-      </motion.div>
+    <section className="screen" aria-label="Timer">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <h1 className="h h1">Timer</h1>
+        <div className="seg" role="group" aria-label="Modo do timer">
+          {MODES.map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={timer.mode === mode ? "on" : ""}
+              disabled={timer.isRunning}
+              onClick={() => handleModeChange(mode)}
+            >
+              {MODE_LABELS[mode]}
+            </button>
+          ))}
+        </div>
+      </div>
 
-      {/* Mode Selector */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <ModeSelector
-          selectedMode={timer.mode}
-          onModeChange={handleModeChange}
-          disabled={timer.isRunning}
-        />
-      </motion.div>
+      <div className="two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(360px, 100%), 1fr))" }}>
+        <div className="card" style={{ display: "flex", flexDirection: "column", gap: 22, alignItems: "center" }}>
+          <div className="row" style={{ width: "100%", flexWrap: "nowrap" }}>
+            <input
+              className="input"
+              type="text"
+              placeholder="Sobre o que é essa sessão?"
+              aria-label="Descrição da sessão"
+              value={session.taskDescription}
+              onChange={(e) => session.setTaskDescription(e.target.value)}
+            />
+            <CategoryChip category={session.selectedCategory} />
+          </div>
 
-      {/* Timer Card with description input */}
-      <TimerCard
-        mode={timer.mode}
-        customDuration={timer.customDuration}
-        onCustomDurationChange={timer.setCustomDuration}
-        isRunning={timer.isRunning}
-        formattedTime={timer.formattedTime}
-        progress={timer.progress}
-        onToggle={() => timer.toggle(taskDescription, selectedCategory?.id ? Number(selectedCategory.id) : null)}
-        onReset={handleReset}
-        onStop={handleReset}
-        canStart={true}
-        taskDescription={taskDescription}
-        onTaskDescriptionChange={setTaskDescription}
-        selectedCategory={selectedCategory}
-      />
+          <TimerOrb style={{ width: "min(300px, 100%)", aspectRatio: "1" }} />
 
-      {/* Category Selection Card */}
-      <CategorySelectorCard
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onCategoryChange={handleCategoryChange}
-        onAddCategory={() => setAddCategoryOpen(true)}
-        onEditCategory={(category) => setEditingCategory(category)}
-        onDeleteCategory={(category) => setDeletingCategory(category)}
-        disabled={false}
-      />
+          {timer.mode === "custom" && (
+            <label className="lab" style={{ width: 140 }}>
+              Duração (min)
+              <input
+                className="input"
+                type="number"
+                min={1}
+                max={180}
+                value={timer.customDuration}
+                disabled={timer.isRunning}
+                onChange={(e) => timer.setCustomDuration(Number(e.target.value))}
+              />
+            </label>
+          )}
+
+          <TimerControls
+            isRunning={timer.isRunning}
+            onToggle={session.toggleTimer}
+            onReset={session.finishSession}
+            onStop={session.finishSession}
+          />
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div className="card alt">
+            <h2 className="h h2" style={{ marginBottom: 14 }}>
+              Categoria
+            </h2>
+            <CategorySelector
+              categories={session.categories}
+              selectedCategory={session.selectedCategory}
+              onCategoryChange={session.selectCategory}
+              onAddCategory={() => setAddCategoryOpen(true)}
+              onEditCategory={setEditingCategory}
+              onDeleteCategory={setDeletingCategory}
+            />
+          </div>
+
+          <div className="card" style={{ flex: 1 }}>
+            <label className="lab" style={{ height: "100%" }}>
+              <span className="h h2" style={{ color: "var(--ink)" }}>
+                Notas
+              </span>
+              <textarea
+                className="input"
+                style={{ flex: 1, minHeight: 150 }}
+                placeholder="Adicione suas notas sobre essa sessão..."
+                value={session.notes}
+                onChange={(e) => session.setNotes(e.target.value)}
+              />
+            </label>
+          </div>
+        </div>
+      </div>
 
       <CreateCategoryDialog
         open={addCategoryOpen || editingCategory !== null}
@@ -154,16 +128,11 @@ const Index = () => {
         }}
         editCategory={editingCategory}
         onCreated={(category) => {
-          setCategories((prev) => [...prev, category]);
-          setSelectedCategory(category);
+          session.setCategories((prev) => [...prev, category]);
+          session.selectCategory(category);
         }}
         onUpdated={(updated) => {
-          setCategories((prev) =>
-            prev.map((c) => (c.id === updated.id ? updated : c))
-          );
-          if (selectedCategory?.id === updated.id) {
-            setSelectedCategory(updated);
-          }
+          session.setCategories((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
         }}
       />
 
@@ -173,20 +142,10 @@ const Index = () => {
           if (!open) setDeletingCategory(null);
         }}
         onDeleted={(deleted) => {
-          setCategories((prev) => prev.filter((c) => c.id !== deleted.id));
-          if (selectedCategory?.id === deleted.id) {
-            setSelectedCategory(null);
-          }
+          session.setCategories((prev) => prev.filter((c) => c.id !== deleted.id));
         }}
       />
-
-      {/* Notes Card */}
-      <TaskDescriptionCard
-        notes={notes}
-        onNotesChange={setNotes}
-        disabled={false}
-      />
-    </div>
+    </section>
   );
 };
 
