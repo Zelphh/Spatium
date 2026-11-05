@@ -188,6 +188,11 @@ button.chip:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .delta { display: inline-flex; align-items: center; min-height: 28px; padding: 0 12px; border-radius: 999px; background: var(--surf2); border: 1px solid var(--line); font-size: 13px; font-weight: 700; white-space: nowrap; }
 .mini-stat { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; border-radius: 30px 22px 30px 22px; background: var(--surf); border: 1px solid var(--line); }
 .mini-stat b { font-family: Fraunces, Georgia, serif; font-size: 28px; font-weight: 500; letter-spacing: -0.02em; font-variation-settings: "SOFT" 100; }
+.heat { display: grid; grid-template-columns: 36px repeat(var(--heat-cols, 12), minmax(0, 1fr)); gap: 5px; min-width: 460px; align-items: center; }
+.heat i { display: block; aspect-ratio: 1; border-radius: 38% 46% 40% 46%; }
+.heat span { font-size: 12px; font-weight: 600; color: var(--mut); }
+.stepper { display: inline-flex; align-items: center; gap: 10px; }
+.stepper b { min-width: 56px; text-align: center; font-family: Fraunces, Georgia, serif; font-size: 26px; font-weight: 500; }
 .blob-404 { position: absolute; inset: 0; border-radius: 58% 42% 46% 54% / 50% 56% 44% 50%; background: linear-gradient(135deg, var(--ac), var(--ac2)); opacity: 0.28; animation: sp-drift 12s ease-in-out infinite alternate; }
 
 /* Notificações (sonner) */

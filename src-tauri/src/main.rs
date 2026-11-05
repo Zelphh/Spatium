@@ -11,6 +11,7 @@ mod repositories {
     pub mod history;
     pub mod dev;
     pub mod shortcuts;
+    pub mod stats;
 }
 
 mod services {
@@ -18,6 +19,7 @@ mod services {
     pub mod dashboard;
     pub mod history;
     pub mod shortcuts;
+    pub mod stats;
 }
 
 mod commands {
@@ -26,6 +28,7 @@ mod commands {
     pub mod history;
     pub mod dev;
     pub mod shortcuts;
+    pub mod stats;
 }
 mod db {
     pub mod pool;
@@ -49,6 +52,7 @@ use commands::dashboard::get_dashboard_chart_data;
 use commands::history::get_history_data;
 use commands::dev::{seed_sample_data, clear_sample_data};
 use commands::shortcuts::{get_shortcuts, update_shortcut};
+use commands::stats::get_stats_data;
 
 use state::AppState;
 use tauri::Manager;
@@ -181,6 +185,7 @@ async fn main() {
             delete_category,
             get_shortcuts,
             update_shortcut,
+            get_stats_data,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao rodar app");

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Minus, Plus } from "lucide-react";
+import { useFocusGoal, formatGoalHours, FOCUS_GOAL_MIN, FOCUS_GOAL_MAX } from "@/hooks/useFocusGoal";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import {
@@ -43,6 +44,7 @@ function formatShortcutKeys(keys: string) {
 const Settings = () => {
   const { theme, setTheme } = useTheme();
   const { accent, setAccent } = useAccent();
+  const { goal, setGoal } = useFocusGoal();
   const [devLoading, setDevLoading] = useState(false);
   const [devMessage, setDevMessage] = useState<string | null>(null);
   const [autostart, setAutostart] = useState(false);
@@ -206,6 +208,40 @@ const Settings = () => {
       </div>
 
       <div className="card">
+        <div className="row" style={{ justifyContent: "space-between" }}>
+          <div>
+            <h2 className="h h2">Meta de foco diária</h2>
+            <div className="mut" style={{ fontSize: 14, marginTop: 4 }}>
+              Usada no anel de meta em Estatísticas
+            </div>
+          </div>
+          <div className="stepper">
+            <button
+              type="button"
+              className="round"
+              style={{ width: 44, height: 44 }}
+              aria-label="Diminuir meta"
+              disabled={goal <= FOCUS_GOAL_MIN}
+              onClick={() => setGoal(goal - 0.5)}
+            >
+              <Minus className="ico" strokeWidth={2} aria-hidden="true" />
+            </button>
+            <b aria-live="polite">{formatGoalHours(goal)}</b>
+            <button
+              type="button"
+              className="round"
+              style={{ width: 44, height: 44 }}
+              aria-label="Aumentar meta"
+              disabled={goal >= FOCUS_GOAL_MAX}
+              onClick={() => setGoal(goal + 0.5)}
+            >
+              <Plus className="ico" strokeWidth={2} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="card alt">
         <div className="row" style={{ justifyContent: "space-between", flexWrap: "nowrap" }}>
           <div>
             <h2 className="h h2">Iniciar com o Windows</h2>
@@ -230,7 +266,7 @@ const Settings = () => {
         )}
       </div>
 
-      <div className="card alt">
+      <div className="card">
         <h2 className="h h2" style={{ marginBottom: 6 }}>
           Atalhos Globais
         </h2>
